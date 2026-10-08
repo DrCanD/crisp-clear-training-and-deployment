@@ -1,7 +1,8 @@
 cff-version: 1.2.0
-message: "Please cite this software concept and record the full Git commit used for your results. This development version is newer than the archived v1.0.0 release."
+message: "Please cite this software and record the version and full Git commit used for your results."
 type: software
-version: "1.0.1.dev0"
+version: "1.0.1"
+date-released: "2026-10-09"
 doi: "10.5281/zenodo.23239552"
 license: MIT
 title: "CRISP and CLEAR: training and deployment"

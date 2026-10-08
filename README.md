@@ -225,11 +225,11 @@ A fresh training run is a new stochastic experiment; hardware and software diffe
 
 ## Citation and questions
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23239553.svg)](https://doi.org/10.5281/zenodo.23239553)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23239552.svg)](https://doi.org/10.5281/zenodo.23239552)
 
 Version 1.0.0 is archived on Zenodo at [doi:10.5281/zenodo.23239553](https://doi.org/10.5281/zenodo.23239553), corresponding to GitHub tag [`v1.0.0`](https://github.com/DrCanD/crisp-clear-training-and-deployment/releases/tag/v1.0.0) and commit `eafc2ca666d869995eeab4f91f976a724604ccca`.
 
-The current development version adds the recovered accelerator and coarse-training records, corrects the power standard errors, and aligns the TPU benchmark settings with the archived protocol. These changes postdate v1.0.0 and are not contained in its Zenodo archive. [CITATION.cff](CITATION.cff) uses the software concept DOI for the development version. Record the full commit used for each result with `git rev-parse HEAD`, together with the configuration and output metadata; cite a version DOI only when using that archived version.
+Version 1.0.1 adds the recovered accelerator and coarse-training records, corrects the power standard errors, and aligns the TPU benchmark settings with the archived protocol. These changes postdate v1.0.0 and are not contained in its Zenodo archive. The software concept DOI links the archived versions. [CITATION.cff](CITATION.cff) provides the software citation metadata. Record the version and full commit used for each result with `git rev-parse HEAD`, together with the configuration and output metadata; use the version-specific DOI of the corresponding archive.
 
 For a reproducibility question, open a [GitHub issue](https://github.com/DrCanD/crisp-clear-training-and-deployment/issues) with the commit, command, configuration, software/device versions and the relevant error output.
 
