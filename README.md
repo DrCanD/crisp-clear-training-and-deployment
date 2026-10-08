@@ -75,11 +75,11 @@ python hardware/verify_integer.py
 
 The tests cover local derivatives, decision thresholds, recurrence arithmetic, operation counts, and numerical aggregation. `check-gradients` compares every parameter with autograd over 36 float64 settings. `analyse-reference` recalculates CSV summaries from stored numerical evidence and verifies source-table hashes. It does not run new training or hardware measurements. `verify_integer.py` checks genuine integer fixtures and recorded board decisions; see [hardware/README.md](hardware/README.md) for its exact scope.
 
-The [CPU workflow](.github/workflows/reproduce.yml) runs on Python 3.11 and 3.12. It checks implementation tests, local gradients, stored numerical evidence, sampled power analysis and one real integer input in each portable C++ variant. GPU training, vendor synthesis, physical measurements and Lean kernel verification are separate workflows.
+The [CPU workflow](.github/workflows/reproduce.yml) runs on Python 3.11 and 3.12. It checks implementation tests, the pinned DVS source adapter, local gradients, stored numerical evidence, sampled power analysis and one real integer input in each portable C++ variant. A separate job checks the Lean proofs. GPU training, vendor synthesis and physical measurements require their respective environments.
 
 ### Tested environment and timing
 
-The 8 October 2026 audit used Linux x86_64 (kernel 6.18.44, glibc 2.39), Python 3.12.14, PyTorch 2.11.0 CPU, and an AMD EPYC 9V74 with nine logical CPUs visible. A clean environment passed dependency checks and all 62 tests, including the board failure gates. Python 3.11 is also covered by the CPU workflow; Windows and macOS were not exercised in this audit.
+The 8 October 2026 audit used Linux x86_64 (kernel 6.18.44, glibc 2.39), Python 3.12.14, PyTorch 2.11.0 CPU, and an AMD EPYC 9V74 with nine logical CPUs visible. A clean environment passed dependency checks; the final suite passed all 70 tests and two subtests, including source provenance, cache compatibility and board failure gates. Python 3.11 is also covered by the CPU workflow; Windows and macOS were not exercised in this audit.
 
 | Check | Observed elapsed time |
 |---|---:|
@@ -87,20 +87,20 @@ The 8 October 2026 audit used Linux x86_64 (kernel 6.18.44, glibc 2.39), Python 
 | Editable installation and remaining dependencies | 61 s |
 | Reference-analysis demo | 0.07 s |
 | 36 local-gradient checks | 2.75 s |
-| Complete implementation test suite | 15.41 s |
+| Complete implementation test suite | 14.83 s |
 
 Installation used a mixture of cached and newly downloaded dependencies; these times exclude the initial PyTorch download. The largest relative gradient error was 3.59 × 10⁻¹⁵ in float64. Full training duration and GPU memory depend on the configuration and device; the short CPU checks do not estimate those costs.
 
 ## Prepare data
 
-The full audio workflows load dense event arrays. The SSC uint8 input arrays alone occupy about 6.9 GiB; preprocessing copies, training tensors, checkpoints and raw downloads need additional memory and disk space. A small CPU check does not establish that a machine can run the complete training protocol.
+SSC preparation uses disk-backed arrays, and the audio loader memory-maps modern Torch caches while retaining support for the older file format. The SSC uint8 inputs occupy about 6.9 GiB on disk. Preparing SSC from scratch used about 20.2 GB of peak disk space for compressed sources, expanded HDF5 files, temporary arrays and the final cache; allow at least 22 GB free, in addition to the software environment and experiment outputs. Training tensors and checkpoints need further resources. A small CPU check does not establish that a machine can run the complete training protocol.
 
 ```bash
 python -m reproduce prepare-data shd
 python -m reproduce prepare-data ssc
 ```
 
-Audio preparation downloads the official [SHD and SSC datasets](https://zenkelab.org/resources/spiking-heidelberg-datasets-shd/), verifies source checksums, bins events into 100 time steps and 700 channels, and checks the registered array identity. SHD uses a stratified 10% validation split with seed 0; SSC uses its official validation split. SHD preprocessing has been rerun from the official HDF5 files and reproduces the archived array fingerprint. SSC preprocessing retains the original arithmetic and checks its archived fingerprint before publishing a cache.
+Audio preparation downloads the official [SHD and SSC datasets](https://zenkelab.org/resources/spiking-heidelberg-datasets-shd/), verifies source checksums, bins events into 100 time steps and 700 channels, and checks the registered array identity. SHD uses a stratified 10% validation split with seed 0; SSC uses its official validation split. Both datasets were rebuilt from the official HDF5 sources and reproduce their archived array fingerprints. The [SSC verification record](data/manifests/ssc_preprocessing_verification.json) includes all source checksums, full-array SHA256 values and a successful reload through the public CLI. SSC binning and cache creation took 90.5 seconds in the audit environment, excluding download and decompression.
 
 For DVS128 Gesture, obtain and extract the official recordings under `data/raw/dvs_gesture/`, including `trials_to_train.txt` and `trials_to_test.txt`. Dataset source information is recorded in [data/manifests/datasets.json](data/manifests/datasets.json). Then run:
 
@@ -111,7 +111,9 @@ python -m reproduce prepare-data dvs_gesture --split-by number
 
 These commands prepare fixed-time and event-count frames, respectively. Both require the archived fingerprint. Raw datasets and prepared caches are generated locally and are excluded from Git.
 
-The archived fixed-time integrator has an edge case: if its final interval is empty before the maximum timestamp, the final frame can include earlier events again. This behavior is retained for reproduction; gesture preprocessing has not been rerun on the full raw dataset.
+Both Gesture preprocessing modes were rerun from all 122 recordings in the checksummed official archive. The resulting training/validation/test splits reproduce the archived fingerprints: `3c87c257bb2d` for fixed-time frames and `56155d24937b` for event-count frames. The [verification record](data/manifests/dvs_gesture_verification.json) includes full-array SHA256 values, source and cache identities, and checks through the training data loader.
+
+The archived fixed-time integrator has an edge case: if its final interval is empty before the maximum timestamp, the final frame can include earlier events again. This behavior is retained for reproduction and covered by a regression test. Full raw-data verification does not change the preprocessing used by the reported experiments.
 
 ## Run experiments
 
@@ -179,6 +181,8 @@ python -m reproduce check-proofs
 
 The project pins Lean 4.19.0, mathlib, and its transitive dependencies. Verification kernel-checks 30 theorems, audits their axiom dependencies, and checks rejection of invalid or unfinished proofs. This formal scope is distinct from numerical gradient checks and empirical training results.
 
+A fresh Ubuntu CI run passed all 30 theorem checks both with dependency setup and on a repeat run. All three negative controls detected the intended invalid proof or disallowed axiom. The [verification record](data/manifests/proof_verification.json) contains the exact source hash, dependency revisions, axiom inventory and the originating CI run.
+
 ## Contents and evidence
 
 | Path | Role |
@@ -193,7 +197,7 @@ The project pins Lean 4.19.0, mathlib, and its transitive dependencies. Verifica
 | `tests/` | Implementation checks |
 | `licenses/` | Required notices for incorporated third-party code |
 
-A fresh training run is a new stochastic experiment; hardware and software differences can change its exact trajectory. Stored results remain unchanged when new experiments run. Full historical training was not repeated during repository preparation. The numerical code was checked against the original implementation, and the SHD preprocessing, local derivatives, decision rules, integer exports, and sampled power analysis were verified independently.
+A fresh training run is a new stochastic experiment; hardware and software differences can change its exact trajectory. Stored results remain unchanged when new experiments run. Full historical training was not repeated during repository preparation. The numerical code was checked against the original implementation. Full SHD, SSC and both DVS preprocessing paths, local derivatives, decision rules, integer exports, sampled power analysis and the Lean identities were verified within their documented scopes.
 
 ## Citation and questions
 

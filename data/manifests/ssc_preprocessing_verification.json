@@ -1,0 +1,232 @@
+{
+  "schema_version": 1,
+  "dataset": "ssc",
+  "status": "passed",
+  "started_at_utc": "2026-10-08T09:53:15.390788+00:00",
+  "completed_at_utc": "2026-10-08T09:55:05.207963+00:00",
+  "command": "python -m reproduce prepare-data ssc --no-download",
+  "download_note": "All three official archives were downloaded and verified against the registered MD5 values before this command. The official md5sums.txt values were checked on 2026-10-08.",
+  "source_checksum_url": "https://zenkelab.org/datasets/md5sums.txt",
+  "preprocessing_seconds": 90.526,
+  "verification_seconds": 19.292,
+  "maximum_time_seconds": 0.99951171875,
+  "array_fingerprint": "3085271aa026",
+  "expected_array_fingerprint": "3085271aa026",
+  "fingerprint_scope": "Archived sampled-array fingerprint matched. Full-array SHA256 values below describe this raw-data re-execution; no complete original SSC cache was available for a byte-for-byte comparison.",
+  "split_sizes": [
+    75466,
+    9981,
+    20382
+  ],
+  "cache_path": "data/processed/ssc.pt",
+  "cache_bytes": 7408879609,
+  "cache_sha256": "4549d37b736fcf24d7a0851e40e7298082b2ef791ad0150e6148ffbee1fdea6b",
+  "array_hash_definition": "SHA256 over every element in contiguous row-major order; uint8 inputs and native little-endian int64 labels.",
+  "sources": {
+    "train": {
+      "url": "https://zenkelab.org/datasets/ssc_train.h5.gz",
+      "archive": "data/raw/ssc/ssc_train.h5.gz",
+      "archive_bytes": 1189043998,
+      "archive_md5": "cc61f72a5a5b6d564a3cfdbc75dadcc5",
+      "archive_sha256": "b07dbebedb561e1c6f890c0adb1474afdad0e22c3227be099e6242aa55cffd5d",
+      "hdf5_bytes": 2652827225,
+      "hdf5_sha256": "17b19f243bab317b978de9cfeefb635dac5197b991ce8b5ab8d48899ff24926f"
+    },
+    "valid": {
+      "url": "https://zenkelab.org/datasets/ssc_valid.h5.gz",
+      "archive": "data/raw/ssc/ssc_valid.h5.gz",
+      "archive_bytes": 155548348,
+      "archive_md5": "555645b13e15fe270fbfe39cb763f805",
+      "archive_sha256": "4a49cd5c3e266e7765978699b0813f06e22c32b699eca126a2a0d3d292505ecc",
+      "hdf5_bytes": 348352908,
+      "hdf5_sha256": "6365c36ff8c680c4b0caf27ca52faa59e14359db5810b528f40dd80e2bcb9210"
+    },
+    "test": {
+      "url": "https://zenkelab.org/datasets/ssc_test.h5.gz",
+      "archive": "data/raw/ssc/ssc_test.h5.gz",
+      "archive_bytes": 323314788,
+      "archive_md5": "e3cf5aa4524459b8e5141b9b34a9e759",
+      "archive_sha256": "f795712f005771acc8847d094244c371a99e67700aae6f7eca511d446af529f5",
+      "hdf5_bytes": 725119654,
+      "hdf5_sha256": "37eb723ad795cfba2a85cb78de7f0f1f2115ddfbe71fa4c979a7722e31a16253"
+    }
+  },
+  "splits": {
+    "train": {
+      "shape": [
+        75466,
+        100,
+        700
+      ],
+      "dtype": "torch.uint8",
+      "range": [
+        0,
+        7
+      ],
+      "inputs_sha256": "69a3fdef6e081039c202882181571dcbf3ebb925727a5c746e483d5168abb980",
+      "labels_sha256": "03c9de2761e3f981c6dd23649f9e4a0841b347e0e9d4f91e701da2910646d469",
+      "labels_dtype": "torch.int64",
+      "class_counts": [
+        2885,
+        2802,
+        2779,
+        2621,
+        2622,
+        2868,
+        2768,
+        2842,
+        2712,
+        2816,
+        2648,
+        1123,
+        2756,
+        2860,
+        2798,
+        1518,
+        1526,
+        1158,
+        2628,
+        1479,
+        1434,
+        2764,
+        2690,
+        1156,
+        1527,
+        2815,
+        1532,
+        2757,
+        1431,
+        1408,
+        1242,
+        1160,
+        1213,
+        1463,
+        2665
+      ]
+    },
+    "valid": {
+      "shape": [
+        9981,
+        100,
+        700
+      ],
+      "dtype": "torch.uint8",
+      "range": [
+        0,
+        6
+      ],
+      "inputs_sha256": "6b20051c151f701fbb3b44ba0c9736e87c17bfb1da511f4e1cb73b610510f929",
+      "labels_sha256": "7472b6fcd8441417fd5655e30291c53684dd9bb4ab2defc1060901642f13d72e",
+      "labels_dtype": "torch.int64",
+      "class_counts": [
+        384,
+        351,
+        345,
+        356,
+        373,
+        367,
+        378,
+        387,
+        346,
+        356,
+        373,
+        146,
+        363,
+        397,
+        377,
+        195,
+        195,
+        139,
+        350,
+        182,
+        204,
+        350,
+        352,
+        132,
+        193,
+        406,
+        197,
+        372,
+        219,
+        213,
+        159,
+        128,
+        153,
+        180,
+        363
+      ]
+    },
+    "test": {
+      "shape": [
+        20382,
+        100,
+        700
+      ],
+      "dtype": "torch.uint8",
+      "range": [
+        0,
+        7
+      ],
+      "inputs_sha256": "82d45e5a31fc05e776bb3a313ba0e979a8a9173214796d19f48b8c8fec177f25",
+      "labels_sha256": "0817139664d014b1bfd61b7c6e0abaf578b40f1ad295a07ee863ecfd4dd47205",
+      "labels_dtype": "torch.int64",
+      "class_counts": [
+        783,
+        737,
+        756,
+        750,
+        733,
+        817,
+        714,
+        769,
+        729,
+        762,
+        724,
+        288,
+        726,
+        787,
+        742,
+        400,
+        379,
+        295,
+        745,
+        403,
+        384,
+        758,
+        759,
+        291,
+        403,
+        720,
+        399,
+        751,
+        404,
+        393,
+        358,
+        287,
+        298,
+        388,
+        750
+      ]
+    }
+  },
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Linux",
+    "numpy": "2.3.5",
+    "torch": "2.11.0+cpu",
+    "h5py": "3.16.0"
+  },
+  "implementation_sha256": {
+    "src/reproduce/data_preparation.py": "e43f7ce5650023203abdf42bead8bd5afb5668874352234211d738183db630b3",
+    "src/reproduce/datasets.py": "1c467ab704d0883a7b83fb79ef1bcb1fc6ad11dff1f6bbb32b0fc60da2af9f53"
+  },
+  "model_training_rerun": false,
+  "cache_loader_verification": {
+    "status": "passed",
+    "command": "python -m reproduce prepare-data ssc --no-download",
+    "completed_at_utc": "2026-10-08T09:56:27.451146+00:00",
+    "seconds": 4.442,
+    "modern_cache_memory_mapping": true,
+    "note": "A separate process reloaded the complete prepared cache through the final public CLI and load_data implementation; its archived fingerprint passed. The binning, _store and data_fingerprint functions were unchanged by the loader update."
+  }
+}

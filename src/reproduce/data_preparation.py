@@ -9,20 +9,24 @@ import hashlib
 import json
 import os
 import shutil
+import tempfile
 import time
 import urllib.request
+from contextlib import nullcontext
 from pathlib import Path
 import numpy as np
 import torch
 from .paths import resolve_path
 from .datasets import _strat, _store, _labels, data_fingerprint
 
-def bin_h5(h5_path, t_bins, n_channels, max_time=None):
+def bin_h5(h5_path, t_bins, n_channels, max_time=None, *, output_path=None):
     """
     Read zenkelab h5 (spikes/times, spikes/units, labels) and bin to
     dense [N, T, C] uint8 array. Event-conserving binning.
 
     If max_time is None, auto-detect from data.
+    An optional output_path stores the dense array in a temporary memory map.
+    The event binning and returned values are identical in both modes.
     Returns X [N, T, C] uint8, y [N] int64, detected max_time.
     """
     import h5py
@@ -42,14 +46,19 @@ def bin_h5(h5_path, t_bins, n_channels, max_time=None):
                     m = float(t.max()) if hasattr(t, 'max') else float(np.max(t))
                     if m > global_max:
                         global_max = m
+                if (i + 1) % 10000 == 0:
+                    print(f'    time-range scan {i + 1}/{N} ...', flush=True)
             max_time = global_max
             print(f'    auto max_time = {max_time:.6f}s', flush=True)
-        X = np.zeros((N, t_bins, n_channels), dtype=np.uint8)
+        shape = (N, t_bins, n_channels)
+        X = (np.zeros(shape, dtype=np.uint8) if output_path is None else
+             np.lib.format.open_memmap(output_path, mode='w+', dtype=np.uint8, shape=shape))
         empty = 0
         for i in range(N):
             ts = np.asarray(times[i], dtype=np.float64)
             us = np.asarray(units[i], dtype=np.int64)
             if len(ts) == 0:
+                X[i] = 0
                 empty += 1
                 continue
             tb = np.clip((ts / max_time * t_bins).astype(np.int64), 0, t_bins - 1)
@@ -125,11 +134,28 @@ def prepare_audio(dataset, download=True):
             paths[split] = raw_dir / record["filename"].removesuffix(".gz")
             if not paths[split].is_file():
                 raise FileNotFoundError(f"Missing raw data: {record['filename'].removesuffix('.gz')}")
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    # SSC has 7.4 GB of dense inputs. File-backed arrays avoid requiring all
+    # three splits to remain in RAM while preserving the archived arithmetic.
+    workspace = (tempfile.TemporaryDirectory(prefix=".ssc-binning-", dir=cache.parent)
+                 if dataset == "ssc" else nullcontext(None))
+    with workspace as temporary:
+        _prepare_audio_cache(dataset, entry, paths, cache, temporary)
+    return entry["cache_path"]
+
+
+def _prepare_audio_cache(dataset, entry, paths, cache, temporary):
+    def output_path(split):
+        return Path(temporary) / f"{split}.npy" if temporary is not None else None
+
     maximum = None if dataset == "ssc" else entry["recorded_maximum_time_seconds"]
-    Xtr, ytr, maximum = bin_h5(paths["train"], 100, 700, max_time=maximum)
+    Xtr, ytr, maximum = bin_h5(paths["train"], 100, 700, max_time=maximum,
+                             output_path=output_path("train"))
     if dataset == "ssc":
-        Xva, yva, _ = bin_h5(paths["valid"], 100, 700, max_time=maximum)
-    Xte, yte, _ = bin_h5(paths["test"], 100, 700, max_time=maximum)
+        Xva, yva, _ = bin_h5(paths["valid"], 100, 700, max_time=maximum,
+                           output_path=output_path("valid"))
+    Xte, yte, _ = bin_h5(paths["test"], 100, 700, max_time=maximum,
+                       output_path=output_path("test"))
     if dataset == "shd":
         itr, iva = _strat(ytr, .10, 0)
         arrays = ((_store(Xtr[itr]), _labels(ytr[itr])),
@@ -144,7 +170,6 @@ def prepare_audio(dataset, download=True):
     if actual != entry["array_fingerprint"]:
         raise ValueError(f"Prepared arrays differ from the archived fingerprint: {actual}. "
                          "No cache was published. The original prepared cache is required.")
-    cache.parent.mkdir(parents=True, exist_ok=True)
     partial = cache.with_suffix(cache.suffix + ".partial")
     if dataset == "shd":
         with partial.open("wb") as stream:
@@ -153,4 +178,3 @@ def prepare_audio(dataset, download=True):
         torch.save(payload, partial)
     os.replace(partial, cache)
     print(f"[VERIFIED] {entry['cache_path']} fingerprint={actual}", flush=True)
-    return entry["cache_path"]

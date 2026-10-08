@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "verified_on": "2026-10-08",
+  "scope": "Complete official raw recording preprocessing and cache loading; no model training or accuracy claim.",
+  "archive": {
+    "filename": "DvsGesture.tar.gz",
+    "bytes": 2938955106,
+    "md5": "8a5c71fb11e24e5ca5b11866ca6c00a1",
+    "sha256": "8741f7774bece9e80351257becb7a5ee58975700d8724740ae736c231ca1747a"
+  },
+  "official_source": "https://ibm.ent.box.com/s/3hiq58ww1pbbjrinh367ykfdf60xsfm8/folder/50167556794",
+  "download_url": "https://www.dropbox.com/s/cct5kyilhtsliup/DvsGesture.tar.gz?dl=1",
+  "expected_archive_md5_source": "https://spikingjelly.readthedocs.io/zh-cn/0.0.0.0.14/_modules/spikingjelly/datasets/dvs128_gesture.html",
+  "source_counts": {
+    "recordings": 122,
+    "labels": 122,
+    "official_train_recordings": 98,
+    "official_test_recordings": 24
+  },
+  "dataset_license": "CC-BY-4.0",
+  "dataset_license_sha256": "5cfeb29096024b9c185bdb2ef6985b9149ada4dfbb4d32a68737c8bad9356684",
+  "array_sha256_definition": "SHA256 of every contiguous array byte in C order. Inputs are uint8; labels are little-endian int64. Split order is train, validation, test.",
+  "results": {
+    "time": {
+      "command": "python -m reproduce prepare-data dvs_gesture --split-by time",
+      "cache_path": "data/processed/gesture_time.pt",
+      "cache_bytes": 767571821,
+      "cache_sha256": "600e7438a20bfd16454f1552faeec798c617d1b7b2859dcdf0ed0ee6521123f5",
+      "array_fingerprint": "3c87c257bb2d",
+      "expected_array_fingerprint": "3c87c257bb2d",
+      "status": "PASS",
+      "splits": [
+        {
+          "split": "train",
+          "shape": [
+            1056,
+            64,
+            2,
+            64,
+            64
+          ],
+          "dtype": "torch.uint8",
+          "input_sha256": "2e52f8b61e33faa7a95bac57be97009826fd9762d791aae463886f7678df92bd",
+          "labels_sha256": "a6321e53434b55f4967e5cca3219629086509bebd0f1d06c8780cfa090cbe3e7",
+          "class_counts": [
+            87,
+            88,
+            88,
+            88,
+            88,
+            88,
+            89,
+            176,
+            88,
+            88,
+            88
+          ]
+        },
+        {
+          "split": "validation",
+          "shape": [
+            120,
+            64,
+            2,
+            64,
+            64
+          ],
+          "dtype": "torch.uint8",
+          "input_sha256": "5e9db6d2911e43b186b56ee0c9337fc0c48df9f034c8ba28b979102a423714f9",
+          "labels_sha256": "38060603d8dc534083e91adda3f274d8083d67fd5c6d9781579ed59b57e731f3",
+          "class_counts": [
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            20,
+            10,
+            10,
+            10
+          ]
+        },
+        {
+          "split": "test",
+          "shape": [
+            288,
+            64,
+            2,
+            64,
+            64
+          ],
+          "dtype": "torch.uint8",
+          "input_sha256": "dbd021e8d894402b79fa9864846b86731ef29e8a35b03b7d2422a34e0cb31056",
+          "labels_sha256": "1b2ed9d1f9345096cdf21054ef5fa21e992029f3be72bba5e818089135aaf100",
+          "class_counts": [
+            24,
+            24,
+            24,
+            24,
+            24,
+            24,
+            24,
+            48,
+            24,
+            24,
+            24
+          ]
+        }
+      ]
+    },
+    "event_count": {
+      "command": "python -m reproduce prepare-data dvs_gesture --split-by number",
+      "cache_path": "data/processed/gesture_event_count.pt",
+      "cache_bytes": 767571955,
+      "cache_sha256": "8be8d6869b6e1c5648bddfbd0fe6660f653621717ebbd8febfc20cf445ffb9f9",
+      "array_fingerprint": "56155d24937b",
+      "expected_array_fingerprint": "56155d24937b",
+      "status": "PASS",
+      "splits": [
+        {
+          "split": "train",
+          "shape": [
+            1056,
+            64,
+            2,
+            64,
+            64
+          ],
+          "dtype": "torch.uint8",
+          "input_sha256": "9d3904b58ce81ae66d7ee6ba812f259e1a9034d98c201f93f7b9c7d2a2f33384",
+          "labels_sha256": "a6321e53434b55f4967e5cca3219629086509bebd0f1d06c8780cfa090cbe3e7",
+          "class_counts": [
+            87,
+            88,
+            88,
+            88,
+            88,
+            88,
+            89,
+            176,
+            88,
+            88,
+            88
+          ]
+        },
+        {
+          "split": "validation",
+          "shape": [
+            120,
+            64,
+            2,
+            64,
+            64
+          ],
+          "dtype": "torch.uint8",
+          "input_sha256": "c9fcd5a5222327cfe6ae20478996e1a892f2c8ab23d9a47ee49eeaed82e7e0e5",
+          "labels_sha256": "38060603d8dc534083e91adda3f274d8083d67fd5c6d9781579ed59b57e731f3",
+          "class_counts": [
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            20,
+            10,
+            10,
+            10
+          ]
+        },
+        {
+          "split": "test",
+          "shape": [
+            288,
+            64,
+            2,
+            64,
+            64
+          ],
+          "dtype": "torch.uint8",
+          "input_sha256": "69878c624460d1b7c6661c3b3f8ed1d63c38e783480147e4e903fecbcb13d841",
+          "labels_sha256": "1b2ed9d1f9345096cdf21054ef5fa21e992029f3be72bba5e818089135aaf100",
+          "class_counts": [
+            24,
+            24,
+            24,
+            24,
+            24,
+            24,
+            24,
+            48,
+            24,
+            24,
+            24
+          ]
+        }
+      ]
+    }
+  }
+}

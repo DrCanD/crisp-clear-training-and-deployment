@@ -1,0 +1,196 @@
+{
+  "status": "PASS",
+  "lean_version": "4.19.0",
+  "mathlib_revision": "c44e0c8ee63ca166450922a373c7409c5d26b00b",
+  "theorem_count": 30,
+  "source_sha256": "62a5d8764ae7c87ad683d53dbcd0523d6ee933e34c039327ae7271c024e1d318",
+  "axiom_allowlist": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "theorem_axioms": {
+    "CrispClear.clear_loss_gradient": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.crisp_retiming_exact": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.decay_stable": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.disagreement_subset": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.eligibility_adjoint_identity": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.eligibility_eq_deriv": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.eligibility_is_derivative": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.firstSome_mem": [
+      "propext"
+    ],
+    "CrispClear.first_look_15_1_rejected": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.first_look_16_0_accepted": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.five_looks_level_001": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.fixed_look_15_1_accepted": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.fixed_unanimous_10_rejected": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.fixed_unanimous_11_accepted": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.flow_add": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.flow_solves_ode": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.flow_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.heldRun_eq_flow": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.pole_neg": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.reference_disagreement_budget": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.reference_level_002": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.retiming_exact": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.sequential_error_budget": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.sequential_returns_a_look": [
+      "propext"
+    ],
+    "CrispClear.sequential_unanimous_13_rejected": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.sequential_unanimous_14_accepted": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.sequential_wrong_subset": [
+      "propext"
+    ],
+    "CrispClear.trajectory_has_derivative": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.two_sided_cutoff": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "CrispClear.zero_initial_eligibility_matches_adjoint": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  "negative_controls": {
+    "false_statement": {
+      "detected": true,
+      "lean_exit_code": 1
+    },
+    "unfinished_proof": {
+      "detected": true,
+      "lean_exit_code": 0
+    },
+    "unproved_axiom": {
+      "detected": true,
+      "lean_exit_code": 0
+    }
+  },
+  "dependency_revisions": {
+    "plausible": "77e08eddc486491d7b9e470926b3dbe50319451a",
+    "LeanSearchClient": "25078369972d295301f5a1e53c3e5850cf6d9d4c",
+    "importGraph": "e6a9f0f5ee3ccf7443a0070f92b62f8db12ae82b",
+    "proofwidgets": "c4919189477c3221e6a204008998b0d724f49904",
+    "aesop": "5d50b08dedd7d69b3d9b3176e0d58a23af228884",
+    "Qq": "fa4f7f15d97591a9cf3aa7724ba371c7fc6dda02",
+    "batteries": "f5d04a9c4973d401c8c92500711518f7c656f034",
+    "Cli": "02dbd02bc00ec4916e99b04b2245b30200e200d0"
+  },
+  "execution": {
+    "environment": "GitHub Actions / ubuntu-24.04",
+    "workflow": ".github/workflows/reproduce.yml",
+    "commit": "a4ab113e416ece72920b7b848dc270c50171ef25",
+    "run_id": 37759827055,
+    "job_id": 113253255470,
+    "run_url": "https://github.com/DrCanD/crisp-clear-training-and-deployment/actions/runs/37759827055",
+    "completed_at": "2026-10-08T09:56:00Z",
+    "commands": [
+      "python proofs/verify.py --setup",
+      "python proofs/verify.py"
+    ],
+    "setup_and_repeat": "PASS"
+  }
+}

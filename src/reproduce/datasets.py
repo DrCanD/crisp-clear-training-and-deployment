@@ -1,6 +1,7 @@
 """Prepared audio caches, fixed validation splits and reproducible batches."""
 import hashlib
 import time
+import zipfile
 from pathlib import Path
 import numpy as np
 import torch
@@ -72,7 +73,10 @@ def load_data(path, dataset="shd", expected_fingerprint=None):
     print(f"  [{time.strftime('%H:%M:%S')}] loading {key} <- {p.name} ({p.stat().st_size / 1000000.0:.0f}MB)...", flush=True)
     ext = p.suffix.lower()
     if ext == '.pt':
-        d = torch.load(p, map_location='cpu', weights_only=False)
+        # Modern tensor caches can be paged from disk, including the 7.4 GB
+        # SSC cache. Legacy torch files retain their original eager loader.
+        d = torch.load(p, map_location='cpu', weights_only=False,
+                       mmap=zipfile.is_zipfile(p))
         keys = set(d.keys())
     elif ext == '.npz':
         dn = np.load(p, allow_pickle=True)

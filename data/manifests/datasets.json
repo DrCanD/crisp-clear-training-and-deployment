@@ -68,8 +68,10 @@
           "md5": "e3cf5aa4524459b8e5141b9b34a9e759"
         }
       },
-      "preprocessing_status": "Binning arithmetic extracted from the original SSC preprocessing code; full raw-data verification pending.",
-      "license": "CC-BY-4.0"
+      "preprocessing_status": "Verified on all three official raw HDF5 sources: source MD5 checks passed, and the prepared arrays and reloaded cache reproduce archived fingerprint 3085271aa026 and split sizes 75466/9981/20382.",
+      "license": "CC-BY-4.0",
+      "verification_date": "2026-10-08",
+      "verification_manifest": "data/manifests/ssc_preprocessing_verification.json"
     },
     "dvs_gesture_time": {
       "raw_directory": "data/raw/dvs_gesture",
@@ -90,8 +92,21 @@
       ],
       "validation_split": "stratified 10 percent of official training set; numpy RandomState(0)",
       "archived_download_url": "https://www.dropbox.com/s/cct5kyilhtsliup/DvsGesture.tar.gz?dl=1",
-      "preprocessing_source": "Original vectorized AEDAT parser and frame integrator, attributed by the archive to SpikingJelly datasets/__init__.py; upstream revision and historical license version were not recorded",
-      "preprocessing_status": "Source port complete; full raw-data re-execution pending."
+      "preprocessing_source": "SpikingJelly-derived adapter verified against the exact PyPI 0.0.0.0.14 source; local changes and historical scope are documented in data/manifests/dvs_preprocessing_source.json.",
+      "preprocessing_status": "Verified on all 122 official raw AEDAT recordings: the archive MD5 matches the published source checksum, and both prepared arrays and reloaded caches reproduce archived fingerprint 3c87c257bb2d.",
+      "preprocessing_provenance_manifest": "data/manifests/dvs_preprocessing_source.json",
+      "verification_date": "2026-10-08",
+      "verification_manifest": "data/manifests/dvs_gesture_verification.json",
+      "source_documentation": "https://research.ibm.com/publications/a-low-power-fully-event-based-gesture-recognition-system",
+      "official_download_url": "https://ibm.ent.box.com/s/3hiq58ww1pbbjrinh367ykfdf60xsfm8/folder/50167556794",
+      "raw_archive": {
+        "filename": "DvsGesture.tar.gz",
+        "bytes": 2938955106,
+        "md5": "8a5c71fb11e24e5ca5b11866ca6c00a1",
+        "sha256": "8741f7774bece9e80351257becb7a5ee58975700d8724740ae736c231ca1747a"
+      },
+      "license": "CC-BY-4.0",
+      "license_notice": "licenses/dvs128-gesture-dataset.txt"
     },
     "dvs_gesture_event_count": {
       "raw_directory": "data/raw/dvs_gesture",
@@ -112,8 +127,21 @@
       ],
       "validation_split": "stratified 10 percent of official training set; numpy RandomState(0)",
       "archived_download_url": "https://www.dropbox.com/s/cct5kyilhtsliup/DvsGesture.tar.gz?dl=1",
-      "preprocessing_source": "Original vectorized AEDAT parser and frame integrator, attributed by the archive to SpikingJelly datasets/__init__.py; upstream revision and historical license version were not recorded",
-      "preprocessing_status": "Source port complete; full raw-data re-execution pending."
+      "preprocessing_source": "SpikingJelly-derived adapter verified against the exact PyPI 0.0.0.0.14 source; local changes and historical scope are documented in data/manifests/dvs_preprocessing_source.json.",
+      "preprocessing_status": "Verified on all 122 official raw AEDAT recordings: the archive MD5 matches the published source checksum, and both prepared arrays and reloaded caches reproduce archived fingerprint 56155d24937b.",
+      "preprocessing_provenance_manifest": "data/manifests/dvs_preprocessing_source.json",
+      "verification_date": "2026-10-08",
+      "verification_manifest": "data/manifests/dvs_gesture_verification.json",
+      "source_documentation": "https://research.ibm.com/publications/a-low-power-fully-event-based-gesture-recognition-system",
+      "official_download_url": "https://ibm.ent.box.com/s/3hiq58ww1pbbjrinh367ykfdf60xsfm8/folder/50167556794",
+      "raw_archive": {
+        "filename": "DvsGesture.tar.gz",
+        "bytes": 2938955106,
+        "md5": "8a5c71fb11e24e5ca5b11866ca6c00a1",
+        "sha256": "8741f7774bece9e80351257becb7a5ee58975700d8724740ae736c231ca1747a"
+      },
+      "license": "CC-BY-4.0",
+      "license_notice": "licenses/dvs128-gesture-dataset.txt"
     }
   }
 }
