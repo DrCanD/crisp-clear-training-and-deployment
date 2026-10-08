@@ -64,6 +64,8 @@
     "batch_table_path": "outputs/hardware/power_analysis/batches.csv",
     "weighting": "Input-count-weighted batch estimates. The original board analysis.json uses equal batch weights and is a diagnostic summary, so its means need not equal the full analysis.",
     "timing": "Processing time is inverse throughput from item-counter increments during the sensor window. Whole-run item counts and elapsed time include other phases and must not replace this rate.",
-    "uncertainty": "Energy intervals use batch residuals; they do not include sensor calibration uncertainty or variation across training seeds."
+    "uncertainty": "Approximate Student-t 95% intervals with B-p residual degrees of freedom, assuming independent, homoscedastic batch measurement errors conditional on workload. Sensor calibration uncertainty and training-seed variation are excluded.",
+    "standard_error": "sqrt(s2 * sum(w_b^2)), where w_b are normalized input-count weights and s2 is OLS SSE/(B-p) conditional on events per input and, when varying, draws per input. This estimates uncertainty of the raw weighted mean.",
+    "mode_scope": "modes_by_variant contains all eight variant/mode combinations. D0 energies are idle-adjusted before control subtraction; other modes are idle- and D0-subtracted. The existing modes keys retain the five main results."
   }
 }

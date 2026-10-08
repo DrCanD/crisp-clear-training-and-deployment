@@ -193,25 +193,32 @@ This command checks both raw recordings and disjoint coverage of all 2,264
 inputs in each variant, then produces `outputs/hardware/power_analysis/summary.json`
 and `batches.csv`. It reproduces sampled and mean-field energy, inverse throughput,
 standard errors, 86.1% sequential-versus-fixed saving, the sequential-to-mean-field
-energy ratio, and the 112-observation sampled energy/time fits. The batch table
-identifies the variant, so the two recordings' PREFIX and D0 rows remain distinct.
-No plotted values are used as input.
+energy ratio, and the 112-observation sampled energy/time fits. The summary's
+`modes_by_variant` contains all eight variant/mode combinations, including
+idle-adjusted D0 control energies before D0 subtraction. The existing `modes`
+keys retain the five main results for compatibility. Both files distinguish the
+two recordings' PREFIX and D0 rows. No plotted values are used as input.
 
 | Mean-field result | Recomputed value |
 |---|---:|
 | Evaluated inputs / disjoint batches | 2,264 / 28 |
 | Incremental energy per input | 563.9394 microjoules |
-| Energy standard error | 1.5964 microjoules |
-| Energy 95% interval | 560.6579–567.2209 microjoules |
+| Energy standard error | 1.6000 microjoules |
+| Approximate energy 95% interval | 560.6505–567.2283 microjoules |
 | Processing time per input (inverse throughput) | 3.3089 ms |
 | Sequential sampled / mean-field energy | 4.6172 |
 
-Energy standard errors use the residual variance of an ordinary least-squares
-model in events per input and, when it varies, draw count. Covariance is evaluated
-at the input-weighted mean design; 95% intervals use 25 or 26 residual degrees of
-freedom. The across-mode draw-cost fits are unweighted ordinary least squares.
-Sensor calibration uncertainty and training-seed variation are not estimated by
-these intervals.
+Energy means are raw batch estimates weighted by input count. With normalized
+weights `w_b`, the standard error is `sqrt(s2 * sum(w_b^2))`, where `s2` is the
+residual variance of an ordinary least-squares model in events per input and,
+when it varies, draw count. This estimates uncertainty of the reported raw mean;
+the covariance of a fitted mean estimates a different quantity. The calculation
+assumes independent, equal-variance batch measurement errors conditional on
+workload. Approximate Student-t 95% intervals use 25 or 26 residual degrees of
+freedom. The summary includes the residual variance and squared-weight sum.
+The across-mode draw-cost fits are unweighted ordinary least squares. Sensor
+calibration uncertainty and training-seed variation are not estimated by these
+intervals.
 
 Both recordings were acquired on 5 October 2026 in separate consecutive sessions,
 using the same input package and identical input groups. Their source hashes,

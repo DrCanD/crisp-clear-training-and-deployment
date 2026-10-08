@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "crisp-clear-training-and-deployment"
-version = "1.0.0"
+version = "1.0.1.dev0"
 description = "Reproduce CRISP and CLEAR training, sampled deployment, statistical decisions, and FPGA measurements"
 readme = "README.md"
 license = {file = "LICENSE"}

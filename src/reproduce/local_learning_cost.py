@@ -4,7 +4,8 @@ This is a forward/backward cost comparison, without optimizer updates. Batch
 normalization uses its initial frozen statistics; dropout masks are absent.
 CLEAR uses the offline reverse-time adjoint with one-lag cross-layer feedback.
 CUDA memory is the allocated peak above the pre-call baseline, not total
-hardware memory. CPU memory is unavailable and is recorded as null.
+hardware memory. Values use MiB (2**20 bytes); legacy *_MB keys are retained.
+CPU memory is unavailable and is recorded as null.
 """
 from dataclasses import asdict
 import gc
@@ -105,7 +106,8 @@ def run(config):
                            'clear': 'No autograd graph; offline reverse adjoints; clear_sym cross-layer feedback',
                            'inference': 'Same explicit forward and caches, without an autograd graph',
                            'timing': 'One warmup discarded; median of synchronized calls',
-                           'memory': 'Median CUDA peak allocated increment above each call baseline; null on CPU'}}
+                           'memory': 'Median CUDA peak allocated increment above each call baseline in MiB (2**20 bytes); legacy *_MB keys; null on CPU',
+                           'memory_unit': 'MiB'}}
     _write(result, target)
     for index, length in enumerate(lengths, 1):
         print(f'[{index}/{len(lengths)}] local learning cost: T={length}, B={batch_size}', flush=True)
@@ -137,7 +139,7 @@ def run(config):
                 row[name + '_MB'] = values['peak_increment_MB']
             result['rows'].append(row)
             print('  ' + ' | '.join(f"{name}: {values['median_ms']:.3f} ms" +
-                                   (f", {values['peak_increment_MB']:.3f} MB" if values['peak_increment_MB'] is not None else ', memory unavailable')
+                                   (f", {values['peak_increment_MB']:.3f} MiB" if values['peak_increment_MB'] is not None else ', memory unavailable')
                                    for name, values in measured.items()), flush=True)
             _write(result, target)
         except torch.cuda.OutOfMemoryError:

@@ -1,6 +1,7 @@
 # CRISP and CLEAR: training and deployment
 
-Code and numerical evidence for the manuscript **Sampler sharpening reduces the deployment gap in stochastic spiking networks**.  
+Code and numerical evidence for the manuscript **Bridging mean-field training and sampled inference in spiking networks**.
+
 **DOI:** [https://doi.org/10.5281/zenodo.23239552](https://doi.org/10.5281/zenodo.23239552)
 
 
@@ -56,12 +57,14 @@ After installation, run:
 python -m reproduce analyse-reference
 ```
 
-This command needs no dataset download, GPU, FPGA or external model checkout. It verifies the hashes of 14 reference tables, writes numerical summaries to `outputs/reference_analysis/`, and prints the input/output manifest. Expected results include:
+This command needs no dataset download, GPU, FPGA or external model checkout. It verifies the reference-file hashes, writes numerical summaries to `outputs/reference_analysis/`, and prints the input/output manifest. Expected results include:
 
 | Output | Expected result |
 |---|---|
 | `sampler_sharpening_paired_summary.csv` | P-SpikeSSM deployment-gap recovery: 20.524146 percentage points on SHD and 30.836032 on SSC; three seeds each |
 | `certification_implementation_audit.csv` | 19,921,282 reference comparisons and 9 accepted-decision/reference disagreements |
+| `accelerator_benchmark_summary.csv` | 65 successful configurations reconstructed from 951 timing repetitions; five unsuccessful or unreported configurations retained separately |
+| `coarse_training_timing_summary.csv` | SHD epoch speedups 2.64/6.64/9.84 and SSC 2.65/6.71/10.18 at factors 2/4/10 |
 | `analysis_metadata.json` | Verified source hashes, output paths and the scope of the reference analysis |
 
 The disagreements are comparisons with a finite sampled reference, not a count of proven violations of the statistical guarantee. The demo recalculates archived evidence; use the experiment configurations below to generate fresh observations.
@@ -138,14 +141,14 @@ Moment diagnostics use the three CRISP mean-field checkpoints from deployment-ga
 | Local sampling variance | `sampling_variance_shd.yaml`, `sampling_variance_ssc.yaml` | `sampling_variance.csv` |
 | Propagated moments and mean bias | `moment_diagnostics_shd.yaml`, `moment_diagnostics_ssc.yaml` | `moment_diagnostics_reported.csv` |
 | Conditional variance with and without reset | `conditional_variance_shd.yaml` | Fresh per-seed diagnostic outputs |
-| Coarse-to-fine time-step transfer | `time_step_transfer_shd.yaml`, `time_step_transfer_ssc.yaml` | `time_step_transfer.csv` |
+| Coarse-to-fine time-step transfer and training time | `time_step_transfer_shd.yaml`, `time_step_transfer_ssc.yaml` | `time_step_transfer.csv`, `coarse_training_timing.csv` |
 | Sparsity and operation cost | `sparsity_shd.yaml` | `sparsity.csv` |
 | CLEAR at a fixed epoch budget | `local_learning_shd.yaml`, `local_learning_ssc.yaml` | `local_learning.csv` |
 | CLEAR/BPTT computation and peak memory | `local_learning_cost.yaml` | `local_learning_memory_reported.csv` |
 | Earlier stopping comparison | `local_learning_shd_early_stopping.yaml`, `local_learning_ssc_early_stopping.yaml` | `local_learning.csv` |
 | Gesture binning, transfer and decisions | `dvs_gesture.yaml`, `dvs_gesture_event_count.yaml` | `gesture_binning.csv` |
 | Statistical decision audit | `certification_shd.yaml`, `certification_ssc.yaml`, `certification_dvs_gesture.yaml` | `certification_audit.csv` |
-| Runtime and memory | `runtime_benchmark.yaml` | `runtime_reported.csv` |
+| Runtime and memory | `runtime_benchmark.yaml`, `runtime_benchmark_tpu.yaml` | `accelerator_benchmarks.csv`, `accelerator_timing_repetitions.csv` |
 
 Configuration names in the table are relative to `configs/`; reference tables are relative to `data/reference/`. Tables whose names end in `_reported.csv` contain archived aggregate observations. Their metadata distinguish those observations from per-seed results. Their underlying raw observations are not fabricated or inferred from reported means.
 
@@ -166,11 +169,29 @@ python -m reproduce run configs/runtime_benchmark.yaml
 
 The benchmark retains scan, chunked, FFT, Toeplitz, matrix, fused, compiled, and XLA variants where supported. Each implementation passes a forward/gradient gate before timing. Timing includes synchronization, warm-up, precision settings and device metadata. Unavailable implementations and projected resource skips are recorded separately from measurements. CUDA/Triton and TPU/XLA require their corresponding runtimes; CPU execution cannot reproduce GPU/TPU throughput or peak-memory observations.
 
+For TPU measurements, create a separate environment on the TPU host. The archived run used Python 3.13, PyTorch 2.9.0 CPU and PyTorch/XLA 2.9.0; the CPU/GPU package installation above uses different versions. From the repository root, run:
+
+```bash
+python3.13 -m venv .venv-tpu
+source .venv-tpu/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r environments/tpu-requirements.txt
+PJRT_DEVICE=TPU PYTHONPATH=src python -m reproduce run configs/runtime_benchmark_tpu.yaml
+```
+
+The TPU command imports the checkout directly through `PYTHONPATH`; do not install the root package into this separate environment. The [PyTorch/XLA 2.9 installation instructions](https://pypi.org/project/torch-xla/2.9.0/) describe the matched TPU runtime. The benchmark configurations specify three warm-up calls on GPU and five on TPU, with `highest` XLA matrix-multiplication precision. The archived device and software versions are recorded in [the accelerator provenance manifest](data/manifests/accelerator_provenance.json). TPU execution requires compatible hardware and was not rerun during these CPU checks.
+
+The stored accelerator evidence contains 70 configurations, including 65 successful measurements and 951 synchronized timing repetitions. `analyse-reference` reconstructs their medians and runtime comparisons. CUDA memory values use MiB (2²⁰ bytes). Allocated peak and increment above the pre-call baseline are distinguished; legacy `*_MB` fields in fresh benchmark output retain their names for compatibility and explicitly identify the unit as MiB.
+
+Coarse-training timing records contain three seeds per dataset and time-step factor. The protocol applies augmentation at the fine resolution before pooling. Speedup is the ratio of the mean fine-resolution epoch time to the mean coarse-resolution epoch time across the same three seeds. The resulting factors are 2.64, 6.64 and 9.84 on SHD, and 2.65, 6.71 and 10.18 on SSC, for pooling factors 2, 4 and 10. Across-seed standard deviations describe training-run variation; accelerator timing repetitions describe repeated measurements within a configuration.
+
+For fresh training-time comparisons, use the CRISP mean-field runs in `deployment_gap_shd.yaml` and `deployment_gap_ssc.yaml` as the factor-1 baselines, and the corresponding CRISP runs in the `time_step_transfer` configurations as the coarse conditions. Use each run's mean epoch duration rather than its total time before early stopping.
+
 ## Integer inference and FPGA
 
 [hardware/README.md](hardware/README.md) describes checkpoint quantization, integer replay, HLS synthesis, board verification, raw power acquisition, and power analysis. The seed-999 hardware checkpoint is included. Its tensor values are unchanged; its manifest records the original artifact hash and the repacked tensor identity. The 128-input integer fixture and all 2,264 recorded board decisions are included.
 
-The sampled and mean-field full-test raw power recordings are included. Each covers all 2,264 inputs in the same 28 disjoint batches. Run `python hardware/analyze_power.py` to recompute both variants and their energy comparison. Mean-field incremental energy is 563.94 microjoules per evaluated input, with a 95% interval of 560.66–567.22 microjoules; sequential sampled inference uses 4.617 times that energy. These quantities subtract bracketed idle power and the D0 replay/control cost. Source hashes and acquisition details are recorded in [the power measurement manifest](data/manifests/power_measurements.json). A new synthesis or physical board measurement requires the appropriate AMD tools and KV260 hardware.
+The sampled and mean-field full-test raw power recordings are included. Each covers all 2,264 inputs in the same 28 disjoint batches. Run `python hardware/analyze_power.py` to recompute both variants and their energy comparison. Mean-field incremental energy is 563.94 microjoules per evaluated input, with an approximate 95% interval of 560.65–567.23 microjoules; sequential sampled inference uses 4.617 times that energy. These quantities subtract bracketed idle power and the D0 replay/control cost. The standard error applies to the raw input-count-weighted mean and uses workload-adjusted residual variance under independent, homoscedastic batch measurement errors. It describes measurement uncertainty, not variation across training seeds. Source hashes and acquisition details are recorded in [the power measurement manifest](data/manifests/power_measurements.json). A new synthesis or physical board measurement requires the appropriate AMD tools and KV260 hardware.
 
 ## Formal identities
 
@@ -191,6 +212,7 @@ A fresh Ubuntu CI run passed all 30 theorem checks both with dependency setup an
 |---|---|
 | `src/reproduce/` | Data preparation, models, training, diagnostics and numerical analysis |
 | `configs/` | Explicit experiment protocols |
+| `environments/` | Separate accelerator environment requirements |
 | `data/reference/` | Numerical observations, integer fixtures and measurement records |
 | `data/checkpoints/` | The checkpoint needed for the hardware reproduction |
 | `data/manifests/` | Dataset identities and reference provenance |
@@ -205,7 +227,9 @@ A fresh training run is a new stochastic experiment; hardware and software diffe
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23239553.svg)](https://doi.org/10.5281/zenodo.23239553)
 
-Version 1.0.0 is archived on Zenodo at [doi:10.5281/zenodo.23239553](https://doi.org/10.5281/zenodo.23239553), corresponding to GitHub tag [`v1.0.0`](https://github.com/DrCanD/crisp-clear-training-and-deployment/releases/tag/v1.0.0) and commit `eafc2ca666d869995eeab4f91f976a724604ccca`. Software citation metadata are provided in [CITATION.cff](CITATION.cff). Cite this version DOI and record the full commit used for each result with `git rev-parse HEAD`, together with the configuration and output metadata.
+Version 1.0.0 is archived on Zenodo at [doi:10.5281/zenodo.23239553](https://doi.org/10.5281/zenodo.23239553), corresponding to GitHub tag [`v1.0.0`](https://github.com/DrCanD/crisp-clear-training-and-deployment/releases/tag/v1.0.0) and commit `eafc2ca666d869995eeab4f91f976a724604ccca`.
+
+The current development version adds the recovered accelerator and coarse-training records, corrects the power standard errors, and aligns the TPU benchmark settings with the archived protocol. These changes postdate v1.0.0 and are not contained in its Zenodo archive. [CITATION.cff](CITATION.cff) uses the software concept DOI for the development version. Record the full commit used for each result with `git rev-parse HEAD`, together with the configuration and output metadata; cite a version DOI only when using that archived version.
 
 For a reproducibility question, open a [GitHub issue](https://github.com/DrCanD/crisp-clear-training-and-deployment/issues) with the commit, command, configuration, software/device versions and the relevant error output.
 

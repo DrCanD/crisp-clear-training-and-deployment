@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "purpose": "Archived numerical evidence for reanalysis; these records are not fresh training or raw sensor traces.",
   "files": [
     {
@@ -127,19 +127,14 @@
       "source_sha256": [
         "a380b559d4af5906504edd2a660740de311d5a7cd81522159145d4d112d08ccb"
       ],
-      "transformation": "Archived numerical report transcription. Individual timing traces, memory traces or per-input diagnostic observations are not present in this table; do not treat rows as repeated experimental runs.",
-      "units": {}
-    },
-    {
-      "path": "data/reference/training_speed_reported.csv",
-      "sha256": "35d708827d76f73d709e7f62da5d338cf16c8bfa0d1eea49bf88c16cf98eb6f5",
-      "rows": 6,
-      "evidence_level": "reported_summary",
-      "source_sha256": [
-        "ca93f3efcaa350daa646e0d49a917f4ff476bdade52036e9109b56270182db30"
-      ],
-      "transformation": "Archived numerical report transcription. Individual timing traces, memory traces or per-input diagnostic observations are not present in this table; do not treat rows as repeated experimental runs.",
-      "units": {}
+      "transformation": "Archived numerical report transcription. Individual timing traces, memory traces or per-input diagnostic observations are not present in this table; do not treat rows as repeated experimental runs. Legacy *_mb column names denote MiB; numerical values are unchanged.",
+      "units": {
+        "bptt_mb": "MiB (2**20 bytes), peak allocated memory above the pre-call baseline",
+        "clear_mb": "MiB (2**20 bytes), peak allocated memory above the pre-call baseline",
+        "inference_mb": "MiB (2**20 bytes), peak allocated memory above the pre-call baseline",
+        "bptt_ms": "milliseconds",
+        "clear_ms": "milliseconds"
+      }
     },
     {
       "path": "data/reference/moment_diagnostics_reported.csv",
@@ -153,14 +148,82 @@
       "units": {}
     },
     {
-      "path": "data/reference/runtime_reported.csv",
-      "sha256": "db7f8b1beec9b80deb2dc179a518ec77fb2f0cc9c5e83320af6e9d73013e287a",
-      "rows": 42,
-      "evidence_level": "reported_summary",
+      "path": "data/reference/accelerator_benchmarks.csv",
+      "sha256": "e774fe0b358dbce1abb0a5deee66d1fd9d65e107a9fcc683d3422ef606ecd9e5",
+      "evidence_level": "configuration_measurements",
       "source_sha256": [
-        "cf185d98406398fd4b9818985b2a5507d2d81aba9b0cfee33c66ee6630dc48e2"
+        "a79062a9d449d2e49c520997c5a48f813138f0546a6b1d1664733422b921a8e8",
+        "f3e684234cd13e4fedde82cebacb21ba54c432513002b6aa8c4dbfe056a9dabf"
       ],
-      "transformation": "Archived numerical report transcription. Individual timing traces, memory traces or per-input diagnostic observations are not present in this table; do not treat rows as repeated experimental runs.",
+      "transformation": "All 70 recorded device/method/sequence-length configurations; successful values retained at original precision. Original MB fields represent MiB. Failed and unreported configurations retain blank measurements.",
+      "units": {
+        "median_step_ms": "milliseconds",
+        "minimum_step_ms": "milliseconds",
+        "maximum_step_ms": "milliseconds",
+        "peak_memory_MiB": "MiB",
+        "baseline_memory_MiB": "MiB",
+        "above_baseline_memory_MiB": "MiB"
+      },
+      "rows": 70
+    },
+    {
+      "path": "data/reference/accelerator_timing_repetitions.csv",
+      "sha256": "c34177fb6425eb8626d8c6c9071bee162be9c5d66c9d1160658495721e08ff1d",
+      "evidence_level": "timing_repetitions",
+      "source_sha256": [
+        "3b2446ff801caab8d63b39244a0408dfe63f399e4431e0ff7e38e7ac9571366f",
+        "20d52b073cc1ca4fad216efad1697656c5eb9a1193a75ef864b3848cb78a8bc7"
+      ],
+      "transformation": "All 951 original synchronized timing repetitions for the 65 successful configurations. Warmup and first-call initialization excluded; numerical values unchanged.",
+      "units": {
+        "step_ms": "milliseconds"
+      },
+      "rows": 951
+    },
+    {
+      "path": "data/reference/coarse_training_timing.csv",
+      "sha256": "1a72bb26db0f3163e0ed3f4c26f465d686215bb6f4d46bd13ca34433b7312b40",
+      "evidence_level": "seed_records",
+      "source_sha256": [
+        "fefb05a43d14f89576e299f4bd2aa9961f9df022aed9db67f41340aeb26f6826",
+        "09864837be61dcbe639b88b2af6df2266912b875ce337dd216d3c97647b448fa"
+      ],
+      "transformation": "All 24 fine-resolution and coarse-resolution seed records. Coarse runs use fine-bin augmentation followed by pooling and match the native and retimed accuracy protocol.",
+      "units": {
+        "mean_epoch_s": "seconds per epoch",
+        "paired_epoch_speedup": "same-seed fine mean epoch duration divided by coarse mean epoch duration"
+      },
+      "rows": 24
+    },
+    {
+      "path": "data/reference/coarse_training_timing_summary.csv",
+      "sha256": "89ed255424dc72422c7f983bacd28719f6a32f8c36b885d41f09bb72aad21f77",
+      "evidence_level": "derived_seed_summary",
+      "source_sha256": [
+        "fefb05a43d14f89576e299f4bd2aa9961f9df022aed9db67f41340aeb26f6826",
+        "09864837be61dcbe639b88b2af6df2266912b875ce337dd216d3c97647b448fa"
+      ],
+      "transformation": "Means and sample SD across three training seeds; speedup is the ratio of fine-resolution and coarse-resolution seed means. Recomputed and verified by analyse-reference.",
+      "units": {
+        "mean_epoch_s": "seconds per epoch",
+        "sample_sd_epoch_s": "seconds per epoch",
+        "speedup_ratio_of_mean_epoch_times": "dimensionless ratio of mean epoch durations"
+      },
+      "rows": 8
+    },
+    {
+      "path": "data/manifests/accelerator_provenance.json",
+      "sha256": "0570275bfe7255eac183f6196640c4f1ef58a348e54b7ffaea83dee06415db8e",
+      "evidence_level": "protocol_records",
+      "source_sha256": [
+        "a79062a9d449d2e49c520997c5a48f813138f0546a6b1d1664733422b921a8e8",
+        "3b2446ff801caab8d63b39244a0408dfe63f399e4431e0ff7e38e7ac9571366f",
+        "f3e684234cd13e4fedde82cebacb21ba54c432513002b6aa8c4dbfe056a9dabf",
+        "20d52b073cc1ca4fad216efad1697656c5eb9a1193a75ef864b3848cb78a8bc7",
+        "fefb05a43d14f89576e299f4bd2aa9961f9df022aed9db67f41340aeb26f6826",
+        "09864837be61dcbe639b88b2af6df2266912b875ce337dd216d3c97647b448fa"
+      ],
+      "transformation": "Source digests, hardware/software settings, numerical correctness gates and protocol matching. Source locations and private run identifiers omitted.",
       "units": {}
     }
   ],
@@ -171,7 +234,9 @@
     "paired_change": "Intervention minus comparator for the same dataset, architecture and seed.",
     "missing_values": "Empty cells are unavailable or inapplicable, never zero.",
     "certificate_accuracy": "Correct and accepted predictions divided by all evaluated inputs; abstentions remain in the denominator.",
-    "certificate_disagreements": "Disagreements between accepted decisions and the resolved reference decision; they are not automatically violations of a probabilistic bound."
+    "certificate_disagreements": "Disagreements between accepted decisions and the resolved reference decision; they are not automatically violations of a probabilistic bound.",
+    "runtime": "Synchronized training-step medians from repeated measurements of a configuration; repetitions are not independent training seeds. Blank failed/unreported configurations are excluded from ratios.",
+    "coarse_speedup": "Ratio of the fine-resolution mean epoch duration to the coarse-resolution mean epoch duration across the same seeds; not the mean of paired speedups."
   },
   "matched_slope_protocol": {
     "source_sha256": "fd39d1bb2726dca5ae4ccb13619ed407e5edc4a40d78062ece006becd33f5ba7",

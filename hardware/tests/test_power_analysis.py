@@ -11,6 +11,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+import numpy as np
+
 HARDWARE = Path(__file__).resolve().parents[1]
 ROOT = HARDWARE.parent
 sys.path.insert(0, str(HARDWARE))
@@ -48,12 +50,21 @@ class PowerAnalysisTest(unittest.TestCase):
             mf = summary['modes']['MF']
             self.assertEqual((mf['batches'], mf['inputs']), (28, 2264))
             self.assertAlmostEqual(mf['energy_uJ_per_input'], 563.939422448099, places=9)
-            self.assertAlmostEqual(mf['energy_standard_error_uJ'], 1.5964321159206956, places=10)
-            self.assertAlmostEqual(mf['energy_ci95_uJ'][0], 560.657909237029, places=9)
-            self.assertAlmostEqual(mf['energy_ci95_uJ'][1], 567.220935659169, places=9)
+            self.assertAlmostEqual(mf['energy_standard_error_uJ'], 1.6000391093215418, places=10)
+            self.assertAlmostEqual(mf['energy_ci95_uJ'][0], 560.6504949559086, places=9)
+            self.assertAlmostEqual(mf['energy_ci95_uJ'][1], 567.2283499402894, places=9)
             self.assertEqual(mf['residual_degrees_of_freedom'], 26)
             self.assertAlmostEqual(mf['processing_time_ms_per_input'], 3.3089013112757217, places=10)
             self.assertAlmostEqual(summary['sequential_over_mean_field'], 4.61716364833731, places=10)
+            self.assertEqual(set(summary['modes']), {'PREFIX', 'N1', 'SEQ', 'FIX', 'MF'})
+            self.assertEqual(set(summary['modes_by_variant']['sampled']), {'D0', 'PREFIX', 'N1', 'SEQ', 'FIX'})
+            self.assertEqual(set(summary['modes_by_variant']['mf']), {'D0', 'PREFIX', 'MF'})
+            self.assertEqual(summary['modes_by_variant']['mf']['MF'], mf)
+            self.assertIn('Approximate', summary['interval_method'])
+            for variant, expected_d0 in (('sampled', 1.0094825512247823), ('mf', 0.2088689261634083)):
+                control = summary['modes_by_variant'][variant]['D0']
+                self.assertAlmostEqual(control['energy_uJ_per_input'], expected_d0, places=9)
+                self.assertEqual(control['energy_scope'], 'idle-adjusted before D0 subtraction')
             with (destination / 'batches.csv').open(newline='') as stream:
                 rows = list(csv.DictReader(stream))
             self.assertEqual(len(rows), 28 * (5 + 3))
@@ -75,6 +86,23 @@ class PowerAnalysisTest(unittest.TestCase):
             self.assertNotIn('MF', summary['modes'])
             self.assertNotIn('sequential_over_mean_field', summary)
             self.assertEqual(set(summary['sources']), {'sampled'})
+            self.assertEqual(set(summary['modes_by_variant']), {'sampled'})
+
+    def test_unequal_input_weights_use_raw_mean_uncertainty(self):
+        # y = 10 + 2*x + (-1, 1, 1, -1). The residual is orthogonal to
+        # the intercept and x, so SSE/(4-2) = 2 exactly. Counts (1,1,1,5)
+        # give sum(w^2) = 7/16 and Var(w @ y) = 7/8. A fitted-mean
+        # covariance instead gives 0.725 and understates this uncertainty.
+        rows = [dict(mode='MF', input_count=count, events_per_input=events,
+                     draws_per_input=0, incremental_energy_uJ=energy,
+                     delta_power_mW=1, processing_time_ms=1, accuracy=1)
+                for count, events, energy in zip((1, 1, 1, 5), (-3, -1, 1, 3), (3, 9, 13, 15))]
+        summary = analyze_power.summarize_mode(rows)
+        self.assertAlmostEqual(summary['energy_uJ_per_input'], 12.5, places=12)
+        self.assertAlmostEqual(summary['residual_variance_uJ2'], 2, places=12)
+        self.assertAlmostEqual(summary['sum_squared_input_weights'], 7 / 16, places=12)
+        self.assertAlmostEqual(summary['energy_standard_error_uJ'], np.sqrt(7 / 8), places=12)
+        self.assertGreater(summary['energy_standard_error_uJ'] - np.sqrt(0.725), 0.08)
 
     def test_archived_record_hashes_and_build_identities(self):
         manifest = json.loads((ROOT / 'data/manifests/power_measurements.json').read_text())

@@ -10,13 +10,15 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import math
 from collections import defaultdict
 from pathlib import Path
-from statistics import mean, stdev
+from statistics import mean, median, stdev
 from typing import Iterable, Mapping, Sequence
 
 REFERENCE_DIR = Path(__file__).resolve().parents[2] / "data" / "reference"
 MANIFEST_PATH = Path(__file__).resolve().parents[2] / "data" / "manifests" / "reference_files.json"
+ACCELERATOR_MANIFEST_PATH = MANIFEST_PATH.with_name("accelerator_provenance.json")
 
 
 def read_table(name: str, reference_dir: Path | None = None) -> list[dict[str, str]]:
@@ -99,6 +101,108 @@ def _write_csv(path: Path, rows: list[dict]) -> None:
         writer.writerows(rows)
 
 
+def accelerator_summary(
+    configurations: Sequence[Mapping], repetitions: Sequence[Mapping], provenance: Mapping,
+) -> list[dict]:
+    """Recompute synchronized timing summaries, retaining unsuccessful configurations.
+
+    Timings are repeated measurements of one device/configuration, not training
+    seeds. Failed or unreported configurations cannot contribute to ratios.
+    Every non-reference implementation must have a passing archived correctness
+    gate before its successful measurements are accepted.
+    """
+    keys = ("device", "method", "sequence_length", "batch_size")
+    gates = {(r["device"], r["method"]): r["checks"].get("pass") is True
+             for r in provenance["gate_checks"]}
+    references = {(r["device"], r["method"]) for r in provenance["reference_implementations"]}
+    samples: dict[tuple, dict[int, float]] = defaultdict(dict)
+    for row in repetitions:
+        key = tuple(row[k] for k in keys)
+        repeat = int(row["repetition"])
+        value = float(row["step_ms"])
+        if repeat in samples[key]:
+            raise ValueError(f"Duplicate timing repetition for {key}: {repeat}")
+        if not math.isfinite(value) or value <= 0:
+            raise ValueError(f"Invalid timing repetition for {key}")
+        samples[key][repeat] = value
+    result, seen = [], set()
+    for row in configurations:
+        key = tuple(row[k] for k in keys)
+        if key in seen:
+            raise ValueError(f"Duplicate accelerator configuration: {key}")
+        seen.add(key)
+        values = samples.get(key, {})
+        status = row["status"]
+        if status not in {"ok", "oom", "not_reported"}:
+            raise ValueError(f"Unknown accelerator status for {key}: {status}")
+        record = dict(row)
+        if status != "ok":
+            if values or any(row.get(k) not in (None, "") for k in (
+                "median_step_ms", "minimum_step_ms", "maximum_step_ms", "timed_repetitions")):
+                raise ValueError(f"Unsuccessful configuration contains timings: {key}")
+        else:
+            implementation = (row["device"], row["method"])
+            if implementation not in references and not gates.get(implementation, False):
+                raise ValueError(f"Missing or failed correctness gate: {implementation}")
+            count = int(row["timed_repetitions"])
+            if count <= 0 or set(values) != set(range(1, count + 1)):
+                raise ValueError(f"Missing timing repetitions for {key}")
+            reductions = {"median_step_ms": median(values.values()),
+                          "minimum_step_ms": min(values.values()),
+                          "maximum_step_ms": max(values.values())}
+            for name, value in reductions.items():
+                if not math.isclose(value, float(row[name]), rel_tol=1e-12, abs_tol=1e-9):
+                    raise ValueError(f"Archived {name} disagrees with repetitions for {key}")
+                record[name] = value
+            if row.get("peak_memory_MiB") not in (None, ""):
+                increment = float(row["peak_memory_MiB"]) - float(row["baseline_memory_MiB"])
+                if not math.isclose(increment, float(row["above_baseline_memory_MiB"]), abs_tol=1e-8):
+                    raise ValueError(f"Memory baseline mismatch for {key}")
+        record["evidence_level"] = "timing_repetitions" if status == "ok" else "configuration_status"
+        result.append(record)
+    if set(samples) - seen:
+        raise ValueError("Timing repetitions have no matching accelerator configuration")
+    return result
+
+
+def coarse_training_summary(rows: Sequence[Mapping]) -> list[dict]:
+    """Reduce seed-level epoch durations; speedups are ratios of seed means.
+
+    Coarse models must use fine-bin augmentation followed by pooling. Epoch
+    duration is the recorded mean within each run; seeds receive equal weight
+    irrespective of their early-stopping epoch counts.
+    """
+    groups: dict[tuple, dict[str, Mapping]] = defaultdict(dict)
+    for row in rows:
+        factor = int(row["coarsening_factor"])
+        key = (row["dataset"], factor)
+        if factor < 1 or row["augmentation_domain"] != ("fine" if factor == 1 else "fine_then_pool"):
+            raise ValueError(f"Unexpected augmentation protocol for {key}")
+        seed = row["seed"]
+        if seed in groups[key]:
+            raise ValueError(f"Duplicate training seed for {key}: {seed}")
+        duration = float(row["mean_epoch_s"])
+        if not math.isfinite(duration) or duration <= 0:
+            raise ValueError(f"Invalid epoch duration for {key}: {seed}")
+        groups[key][seed] = row
+    result = []
+    for (dataset, factor), records in groups.items():
+        baseline = groups.get((dataset, 1), {})
+        if len(records) < 2 or set(records) != set(baseline):
+            raise ValueError(f"Unpaired training seeds for {(dataset, factor)}")
+        for seed, row in records.items():
+            if int(row["temporal_bins"]) * factor != int(baseline[seed]["temporal_bins"]):
+                raise ValueError(f"Inconsistent temporal bins for {(dataset, factor, seed)}")
+            ratio = float(baseline[seed]["mean_epoch_s"]) / float(row["mean_epoch_s"])
+            if not math.isclose(ratio, float(row["paired_epoch_speedup"]), rel_tol=1e-12):
+                raise ValueError(f"Paired epoch speedup mismatch for {(dataset, factor, seed)}")
+        durations = [float(row["mean_epoch_s"]) for row in records.values()]
+        result.append(dict(dataset=dataset, coarsening_factor=factor,
+            mean_epoch_s=mean(durations), sample_sd_epoch_s=stdev(durations), training_seeds=len(records),
+            speedup_ratio_of_mean_epoch_times=mean(float(r["mean_epoch_s"]) for r in baseline.values()) / mean(durations)))
+    return result
+
+
 def analyse(output_dir: str | Path) -> dict:
     """Write reproducible CSV/JSON summaries of stored reference evidence.
 
@@ -110,7 +214,10 @@ def analyse(output_dir: str | Path) -> dict:
     output.mkdir(parents=True, exist_ok=True)
     manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
     for entry in manifest["files"]:
-        path = REFERENCE_DIR / Path(entry["path"]).name
+        relative = Path(entry["path"])
+        if relative.is_absolute() or ".." in relative.parts or relative.parts[0] != "data":
+            raise ValueError(f"Invalid reference path: {entry['path']}")
+        path = REFERENCE_DIR.parents[1] / relative
         if hashlib.sha256(path.read_bytes()).hexdigest() != entry["sha256"]:
             raise ValueError(f"Reference checksum mismatch: {path.name}")
     products: dict[str, list[dict]] = {}
@@ -216,16 +323,32 @@ def analyse(output_dir: str | Path) -> dict:
     products["local_learning_memory_ratios.csv"] = [dict(time_steps=int(r["T"]),
         bptt_to_clear_memory_ratio=float(r["bptt_mb"]) / float(r["clear_mb"]),
         clear_to_inference_memory_ratio=float(r["clear_mb"]) / float(r["inference_mb"]), evidence_level="reported_summary") for r in memory]
-    runtime = read_table("runtime_reported.csv")
+    accelerator_provenance = json.loads(ACCELERATOR_MANIFEST_PATH.read_text(encoding="utf-8"))
+    runtime = accelerator_summary(read_table("accelerator_benchmarks.csv"),
+        read_table("accelerator_timing_repetitions.csv"), accelerator_provenance)
+    products["accelerator_benchmark_summary.csv"] = runtime
     timing = []
     for row in runtime:
-        if not row["method"].startswith("CRISP"):
+        if row["status"] != "ok" or not row["method"].startswith("CRISP"):
             continue
-        matches = [r for r in runtime if r["device"] == row["device"] and r["T"] == row["T"] and r["method"].startswith("LIF")]
+        matches = [r for r in runtime if r["status"] == "ok" and r["device"] == row["device"]
+                   and r["sequence_length"] == row["sequence_length"] and r["batch_size"] == row["batch_size"]
+                   and r["method"].startswith("LIF")]
         for baseline in matches:
-            timing.append(dict(device=row["device"], time_steps=int(row["T"]), method=row["method"], baseline=baseline["method"],
-                baseline_time_over_method_time=float(baseline["step_ms"]) / float(row["step_ms"]), evidence_level="reported_summary"))
+            timing.append(dict(device=row["device"], time_steps=int(row["sequence_length"]), method=row["method"], baseline=baseline["method"],
+                baseline_time_over_method_time=float(baseline["median_step_ms"]) / float(row["median_step_ms"]), evidence_level="timing_repetitions"))
     products["runtime_ratios.csv"] = timing
+    coarse = coarse_training_summary(read_table("coarse_training_timing.csv"))
+    archived_rows = read_table("coarse_training_timing_summary.csv")
+    archived_coarse = {(r["dataset"], int(r["coarsening_factor"])): r for r in archived_rows}
+    if len(archived_coarse) != len(coarse) or len(archived_rows) != len(coarse):
+        raise ValueError("Coarse-training summary has missing or duplicate conditions")
+    for row in coarse:
+        stored = archived_coarse.get((row["dataset"], row["coarsening_factor"]), {})
+        for metric in ("mean_epoch_s", "sample_sd_epoch_s", "training_seeds", "speedup_ratio_of_mean_epoch_times"):
+            if metric not in stored or not math.isclose(float(row[metric]), float(stored[metric]), rel_tol=1e-12):
+                raise ValueError(f"Coarse-training summary mismatch: {row['dataset']}, {row['coarsening_factor']}, {metric}")
+    products["coarse_training_timing_summary.csv"] = coarse
 
     for name, records in products.items():
         _write_csv(output / name, records)
@@ -238,7 +361,9 @@ def analyse(output_dir: str | Path) -> dict:
         "outputs": [{"path": name, "rows": len(rows)} for name, rows in products.items()],
         "statistics": "Arithmetic means and sample SD (ddof=1) across seeds. Paired differences use matched seed identities. No significance or equivalence claim is inferred.",
         "certificate_scope": "Audit comparisons reuse cached draws across alpha levels and cells. Source aggregate counts cover both alpha levels and are deduplicated across their repeated rows. Counts are not independent draws. The guarantee concerns the limiting sampled decision, not true-label correctness or adversarial robustness.",
-        "reported_summary_scope": "Memory, runtime, epoch speed and moment-diagnostic records are archived reported summaries; per-run traces are not supplied by those tables.",
+        "reported_summary_scope": "Local-learning memory/timing and moment-diagnostic tables remain archived reported summaries; their individual measurement traces are not supplied.",
+        "accelerator_scope": "All successful accelerator medians, minima and maxima are recomputed from synchronized timed repetitions after the archived correctness gates. Repetitions measure one configuration and are not independent training seeds. Warmup and first-call initialization are excluded. Failed and unreported configurations retain blank values and do not enter runtime ratios. Memory is in MiB (2**20 bytes).",
+        "coarse_training_scope": "Mean epoch durations and sample SD use equal weight for each training seed. Speedup is fine-resolution mean epoch duration divided by coarse-resolution mean epoch duration, using augmentation in fine bins followed by pooling. It is neither a mean of paired ratios nor a total training-time reduction under early stopping.",
         "hardware_scope": "No manuscript-transcribed full-test power values are used as raw measurements by this analysis.",
     }
     (output / "analysis_metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")

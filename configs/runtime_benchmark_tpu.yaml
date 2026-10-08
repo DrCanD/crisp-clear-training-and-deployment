@@ -1,6 +1,8 @@
+# TPU counterpart of the matched runtime benchmark. Use the separate
+# environments/tpu-requirements.txt environment on a single TPU v6e chip.
 experiment: runtime_benchmark
-device: cuda
-output: outputs/runtime_benchmark
+device: xla
+output: outputs/runtime_benchmark_tpu
 model:
   n_in: 700
   n_hidden: 256
@@ -24,34 +26,10 @@ benchmark:
   - 10000
   batch_sizes:
   - 64
-  batch_sweep_timesteps:
-  - 100
-  - 1000
-  batch_sweep_sizes:
-  - 16
-  - 32
-  - 64
-  - 128
-  - 256
-  - 512
-  - 1024
-  latency_timesteps:
-  - 100
-  - 1000
-  - 10000
   implementations:
-  - crisp_hillis
-  - crisp_chunked
-  - crisp_fft
-  - crisp_toeplitz
   - crisp_chunkmm
-  - crisp_fused
-  - lif_loop
-  - lif_compiled
-  - lif_fused
-  - lif_fused2
+  - crisp_toeplitz
   - lif_xla_scan
-  - spsn_sb
   warmup_gpu: 3
   warmup_xla: 5
   repeats: 15
@@ -61,10 +39,8 @@ benchmark:
   max_first_seconds: 900
   toeplitz_memory_fraction: 0.6
   xla_memory_fraction: 1.0
+  xla_matmul_precision: highest
   gate_timesteps: 1000
   chunk_length: 64
   input_density: 0.05
   tf32: true
-  xla_matmul_precision: highest
-  spsn_path: external_code/spsn
-  fetch_dependencies: false

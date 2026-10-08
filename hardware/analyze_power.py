@@ -116,13 +116,16 @@ def batch_rows(data):
                          'events_per_input': values['events_per_item'], 'draws_per_input': values['draws_per_item'],
                          'incremental_energy_uJ': energy - control_energy,
                          'idle_adjusted_energy_uJ': energy,
+                         'delta_power_mW': values['mean_mW'] - values['idle_bracket_mW'],
                          'processing_time_ms': 1000 / values['decisions_per_s'],
                          'accuracy': values['accuracy']})
     return rows
 
 
 def summarize_mode(rows):
-    y = np.asarray([r['incremental_energy_uJ'] for r in rows])
+    control = rows[0]['mode'] == 'D0'
+    energy_field = 'idle_adjusted_energy_uJ' if control else 'incremental_energy_uJ'
+    y = np.asarray([r[energy_field] for r in rows])
     weights = np.asarray([r['input_count'] for r in rows], dtype=float)
     weights /= weights.sum()
     features = [np.ones(len(rows)), np.asarray([r['events_per_input'] for r in rows])]
@@ -142,13 +145,20 @@ def summarize_mode(rows):
         raise ValueError('Insufficient independent measurement batches')
     residuals = y - x @ coefficients
     residual_variance = float(residuals @ residuals / degrees)
-    mean_design = weights @ x
-    standard_error = float(np.sqrt(residual_variance * mean_design @ np.linalg.inv(x.T @ x) @ mean_design))
+    # The reported estimator is the raw input-weighted mean, not a fitted mean.
+    # Conditional on workload, independent equal-variance batch errors give
+    # Var(weights @ y) = sigma^2 * sum(weights^2).
+    sum_squared_weights = float(weights @ weights)
+    standard_error = float(np.sqrt(residual_variance * sum_squared_weights))
     mean = float(weights @ y)
     half = float(student_t.ppf(0.975, degrees) * standard_error)
     return {'batches': len(rows), 'inputs': int(sum(r['input_count'] for r in rows)),
+            'energy_scope': 'idle-adjusted before D0 subtraction' if control else 'idle- and D0-subtracted',
             'energy_uJ_per_input': mean, 'energy_standard_error_uJ': standard_error,
             'energy_ci95_uJ': [mean - half, mean + half], 'residual_degrees_of_freedom': int(degrees),
+            'residual_variance_uJ2': residual_variance,
+            'sum_squared_input_weights': sum_squared_weights,
+            'delta_power_mW': float(weights @ np.asarray([r['delta_power_mW'] for r in rows])),
             'processing_time_ms_per_input': float(weights @ np.asarray([r['processing_time_ms'] for r in rows])),
             'mean_draws': float(weights @ draws),
             'accuracy': float(weights @ np.asarray([r['accuracy'] for r in rows]))}
@@ -176,12 +186,18 @@ def main():
     sampled_path = repository_path(args.sampled)
     sampled = load_measurement(sampled_path, expected_variant='sampled')
     rows = batch_rows(sampled)
-    modes = {mode: summarize_mode([r for r in rows if r['mode'] == mode])
-             for mode in ('PREFIX', 'N1', 'SEQ', 'FIX')}
-    result = {'scope': 'Incremental SOM input energy after bracketed-idle and D0 subtraction; all evaluated inputs, including abstentions.',
-              'standard_error_method': 'OLS batch residual variance with events per input and, when varying, draws per input; covariance evaluated at the input-weighted mean design.',
+    sampled_modes = {mode: summarize_mode([r for r in rows if r['mode'] == mode])
+                     for mode in ('D0', 'PREFIX', 'N1', 'SEQ', 'FIX')}
+    # Keep the original main-result keys for existing analysis consumers.
+    modes = {mode: sampled_modes[mode] for mode in ('PREFIX', 'N1', 'SEQ', 'FIX')}
+    result = {'scope': 'Incremental SOM input energy after bracketed-idle and D0 subtraction; D0 controls are idle-adjusted only. All evaluated inputs, including abstentions, contribute.',
+              'estimator': 'Raw batch energy weighted by input count.',
+              'standard_error_method': 'sqrt(s2 * sum(w_b^2)); normalized input-count weights w_b and OLS residual variance s2 = SSE / (B-p), conditional on events per input and, when varying, draws per input.',
+              'interval_method': 'Approximate Student-t 95% intervals with B-p residual degrees of freedom.',
+              'uncertainty_assumptions': 'Independent, homoscedastic batch measurement errors conditional on workload; sensor calibration uncertainty and training-seed variation excluded.',
               'sources': {'sampled': measurement_source(sampled_path, sampled)},
-              'modes': modes, 'energy_draw_fit': fit_draw_cost(rows, 'incremental_energy_uJ'),
+              'modes': modes, 'modes_by_variant': {'sampled': sampled_modes},
+              'energy_draw_fit': fit_draw_cost(rows, 'incremental_energy_uJ'),
               'time_draw_fit': fit_draw_cost(rows, 'processing_time_ms')}
     if args.mean_field:
         mf_path = repository_path(args.mean_field)
@@ -189,7 +205,10 @@ def main():
         validate_comparison(sampled, mean_field)
         result['sources']['mean_field'] = measurement_source(mf_path, mean_field)
         mf_rows = batch_rows(mean_field)
-        result['modes']['MF'] = summarize_mode([r for r in mf_rows if r['mode'] == 'MF'])
+        mf_modes = {mode: summarize_mode([r for r in mf_rows if r['mode'] == mode])
+                    for mode in ('D0', 'PREFIX', 'MF')}
+        result['modes_by_variant']['mf'] = mf_modes
+        result['modes']['MF'] = mf_modes['MF']
         rows += mf_rows
         mf_energy = result['modes']['MF']['energy_uJ_per_input']
         if not np.isfinite(mf_energy) or mf_energy <= 0:

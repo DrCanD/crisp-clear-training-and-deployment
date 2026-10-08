@@ -1,0 +1,11 @@
+# Synthetic TPU benchmark only; use a separate Python 3.13 environment.
+# The archived measurements used torch 2.9.0+cpu, torch_xla 2.9.0 and NumPy 2.1.3.
+# torch_xla[tpu] installs the matching TPU runtime; no nightly or Pallas extras.
+# Installation: python -m pip install -r environments/tpu-requirements.txt
+# Run from the repository root with PYTHONPATH=src; do not install the root
+# CPU/GPU package into this environment, since it pins a different torch version.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.9.0+cpu
+torch_xla[tpu]==2.9.0
+numpy==2.1.3
+PyYAML==6.0.3

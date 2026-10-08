@@ -92,3 +92,29 @@ def test_runtime_projections_are_not_measurements():
     assert projected == pytest.approx(0.020)
     assert first == pytest.approx(0.080)
     assert len(done) == 1
+
+
+def test_archived_device_warmups_and_legacy_override():
+    from reproduce.cli import read_config
+
+    config = read_config('configs/runtime_benchmark.yaml')
+    config['device'] = 'cpu'
+    benchmark.configure(config)
+    assert benchmark.cfg.n_warm_gpu == 3
+    assert benchmark.cfg.n_warm_xla == 5
+    assert benchmark.XLA_PREC_REQ == 'highest'
+
+    tpu_config = read_config('configs/runtime_benchmark_tpu.yaml')
+    assert tpu_config['model'] == config['model']
+    assert tpu_config['output'] != config['output']
+    tpu_config['device'] = 'cpu'
+    benchmark.configure(tpu_config)
+    assert benchmark.cfg.n_warm_xla == 5
+    assert benchmark.XLA_PREC_REQ == 'highest'
+
+    benchmark.configure({'device': 'cpu', 'benchmark': {'warmup': 2}})
+    assert benchmark.cfg.n_warm_gpu == benchmark.cfg.n_warm_xla == 2
+
+    benchmark.configure({'device': 'cpu', 'benchmark': {'warmup': 2, 'warmup_xla': 5}})
+    assert benchmark.cfg.n_warm_gpu == 2
+    assert benchmark.cfg.n_warm_xla == 5

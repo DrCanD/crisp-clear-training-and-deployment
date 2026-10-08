@@ -1184,6 +1184,7 @@ def time_fn(step, n_warm):
     return r
 
 def mem_of(step):
+    """CUDA allocations in MiB (2**20 bytes); retain legacy *_MB keys."""
     if not CUDA:
         return {}
     torch.cuda.synchronize()
@@ -1286,7 +1287,8 @@ def configure(config=None):
         n_in=CCFG.n_in, n_classes=CCFG.n_classes, p_in=float(options.get('input_density', 0.05)),
         lr=1e-3, weight_decay=1e-4, tf32=bool(options.get('tf32', True)),
         chunkmm_L=int(options.get('chunk_length', 64)), gate_T_device=int(options.get('gate_timesteps', 1000)),
-        n_warm_gpu=int(options.get('warmup', 3)), n_warm_xla=int(options.get('warmup', 5)),
+        n_warm_gpu=int(options.get('warmup_gpu', options.get('warmup', 3))),
+        n_warm_xla=int(options.get('warmup_xla', options.get('warmup', 5))),
         n_timed_max=int(options.get('repeats', 15)), min_timed=int(options.get('min_repeats', 3)),
         unit_budget_s=float(options.get('unit_budget_seconds', 30)),
         max_step_s=float(options.get('max_step_seconds', 60)),
@@ -1443,7 +1445,8 @@ def run(config):
                            'training': 'Cross-entropy on mean-pooled logits; AdamW; no rate penalty',
                            'crisp_training': 'mean-field', 'crisp_inference': 'sampled',
                            'timing': 'Synchronized per step; first step and warmup reported separately',
-                           'memory': 'CUDA allocated peak and increment above baseline; unavailable elsewhere',
+                           'memory': 'CUDA allocated peak and increment above baseline in MiB (2**20 bytes); legacy *_MB keys; unavailable elsewhere',
+                           'memory_unit': 'MiB',
                            'precision': 'float32; shared TF32 setting on CUDA'}}
     if target.exists():
         stored = json.loads(target.read_text(encoding='utf-8'))
