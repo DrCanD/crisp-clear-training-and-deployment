@@ -3,6 +3,7 @@ message: "Please cite this software and record the full Git commit used for your
 type: software
 version: "1.0.0"
 date-released: "2026-10-08"
+doi: "10.5281/zenodo.23239553"
 license: MIT
 title: "CRISP and CLEAR: training and deployment"
 authors:
