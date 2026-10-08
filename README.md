@@ -1,27 +1,68 @@
 # CRISP and CLEAR: training and deployment
 
-Reproduction code for **Sampler sharpening reduces the deployment gap in stochastic spiking networks**.
+Code and numerical evidence for the manuscript **Sampler sharpening reduces the deployment gap in stochastic spiking networks**.
 
 CRISP means *continuous-time reset-free independent-sampling perceptron*. CLEAR means *closed-form local eligibility and adjoint rule*. The experiments connect mean-field training to sampled inference, statistical decisions, and measured FPGA decision cost. They also compare training rules, sampling locations, time-step transfer, local learning, and runtime implementations.
 
+Start with the [CPU demo](#cpu-demo) to recalculate the stored numerical evidence without downloading a dataset. The [experiment map](#run-experiments) gives the configurations for fresh training and inference. [Hardware instructions](hardware/README.md) cover integer replay and physical measurements.
+
 ## Install
 
-Use Python 3.11–3.12 and Git. Run the installation commands from the repository root:
+Use Python 3.11–3.12 and Git. Clone the repository and create an environment:
 
 ```bash
+git clone https://github.com/DrCanD/crisp-clear-training-and-deployment.git
+cd crisp-clear-training-and-deployment
 python -m venv .venv
+```
+
+Activate it on Linux or macOS:
+
+```bash
 source .venv/bin/activate
+```
+
+On Windows PowerShell, use `.venv\Scripts\Activate.ps1` instead. Install the CPU dependencies from the repository root:
+
+```bash
 python -m pip install --upgrade pip
-python -m pip install torch==2.11.0 torchvision==0.26.0 --index-url https://download.pytorch.org/whl/cpu
-python -m pip install -e '.[test,state-space]'
-python -m reproduce fetch-state-space
+python -m pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cpu
+python -m pip install -e ".[test]"
 ```
 
 This installs the CPU build for implementation checks and numerical analysis. For GPU training, install the corresponding PyTorch 2.11 and torchvision 0.26 CUDA builds using the [official installation instructions](https://pytorch.org/get-started/previous-versions/) before installing the package. Training configurations request CUDA; `--device cpu` overrides the device for a check or a small run. Complete training and long-sequence benchmarks are expensive on a CPU.
 
-The P-SpikeSSM checkout is pinned to `8f7a954852ae29f4ef961bac341321f7f9330c51`; its commit and 25 source-file hashes are checked before use. External source is stored under `external_code/` and retains its upstream license.
+For the P-SpikeSSM comparisons, also install and verify the optional baseline:
+
+```bash
+python -m pip install torchvision==0.26.0 --index-url https://download.pytorch.org/whl/cpu
+python -m pip install -e ".[test,state-space]"
+python -m reproduce fetch-state-space
+```
+
+The P-SpikeSSM checkout is pinned to `8f7a954852ae29f4ef961bac341321f7f9330c51`; its commit and 25 source-file hashes are checked before use. External source is stored under `external_code/` and retains its upstream license. The CPU demo and implementation tests do not require this checkout.
 
 All configuration paths are relative to this repository. After editable installation, commands resolve those paths from the package location, so the working directory does not change the selected input or output. New results and checkpoints are written under `outputs/`.
+
+This is a source-checkout workflow: retain the repository and use the editable install above. The configurations, reference data, hardware sources and proofs live alongside the Python package. A standalone wheel does not contain the full reproduction material.
+
+## CPU demo
+
+After installation, run:
+
+```bash
+python -m reproduce analyse-reference
+```
+
+This command needs no dataset download, GPU, FPGA or external model checkout. It verifies the hashes of 14 reference tables, writes numerical summaries to `outputs/reference_analysis/`, and prints the input/output manifest. Expected results include:
+
+| Output | Expected result |
+|---|---|
+| `sampler_sharpening_paired_summary.csv` | P-SpikeSSM deployment-gap recovery: 20.524146 percentage points on SHD and 30.836032 on SSC; three seeds each |
+| `certification_implementation_audit.csv` | 19,921,282 reference comparisons and 9 accepted-decision/reference disagreements |
+| `analysis_metadata.json` | Verified source hashes, output paths and the scope of the reference analysis |
+
+The disagreements are comparisons with a finite sampled reference, not a count of proven violations of the statistical guarantee. The demo recalculates archived evidence; use the experiment configurations below to generate fresh observations.
 
 ## Check the implementation
 
@@ -34,7 +75,25 @@ python hardware/verify_integer.py
 
 The tests cover local derivatives, decision thresholds, recurrence arithmetic, operation counts, and numerical aggregation. `check-gradients` compares every parameter with autograd over 36 float64 settings. `analyse-reference` recalculates CSV summaries from stored numerical evidence and verifies source-table hashes. It does not run new training or hardware measurements. `verify_integer.py` checks genuine integer fixtures and recorded board decisions; see [hardware/README.md](hardware/README.md) for its exact scope.
 
+The [CPU workflow](.github/workflows/reproduce.yml) runs on Python 3.11 and 3.12. It checks implementation tests, local gradients, stored numerical evidence, sampled power analysis and one real integer input in each portable C++ variant. GPU training, vendor synthesis, physical measurements and Lean kernel verification are separate workflows.
+
+### Tested environment and timing
+
+The 8 October 2026 audit used Linux x86_64 (kernel 6.18.44, glibc 2.39), Python 3.12.14, PyTorch 2.11.0 CPU, and an AMD EPYC 9V74 with nine logical CPUs visible. A clean environment passed dependency checks and all 62 tests, including the board failure gates. Python 3.11 is also covered by the CPU workflow; Windows and macOS were not exercised in this audit.
+
+| Check | Observed elapsed time |
+|---|---:|
+| PyTorch/torchvision installation from already-downloaded wheels | 27 s |
+| Editable installation and remaining dependencies | 61 s |
+| Reference-analysis demo | 0.07 s |
+| 36 local-gradient checks | 2.75 s |
+| Complete implementation test suite | 15.41 s |
+
+Installation used a mixture of cached and newly downloaded dependencies; these times exclude the initial PyTorch download. The largest relative gradient error was 3.59 × 10⁻¹⁵ in float64. Full training duration and GPU memory depend on the configuration and device; the short CPU checks do not estimate those costs.
+
 ## Prepare data
+
+The full audio workflows load dense event arrays. The SSC uint8 input arrays alone occupy about 6.9 GiB; preprocessing copies, training tensors, checkpoints and raw downloads need additional memory and disk space. A small CPU check does not establish that a machine can run the complete training protocol.
 
 ```bash
 python -m reproduce prepare-data shd
@@ -135,5 +194,15 @@ The project pins Lean 4.19.0, mathlib, and its transitive dependencies. Verifica
 | `licenses/` | Required notices for incorporated third-party code |
 
 A fresh training run is a new stochastic experiment; hardware and software differences can change its exact trajectory. Stored results remain unchanged when new experiments run. Full historical training was not repeated during repository preparation. The numerical code was checked against the original implementation, and the SHD preprocessing, local derivatives, decision rules, integer exports, and sampled power analysis were verified independently.
+
+## Citation and questions
+
+Software citation metadata are provided in [CITATION.cff](CITATION.cff). Record the full commit used for each result with `git rev-parse HEAD`, together with the configuration and output metadata. The repository currently has no archived release or DOI.
+
+For a reproducibility question, open a [GitHub issue](https://github.com/DrCanD/crisp-clear-training-and-deployment/issues) with the commit, command, configuration, software/device versions and the relevant error output.
+
+## License and third-party sources
+
+No project-wide reuse license has been assigned yet. The third-party notices below apply to their respective components and do not license the original project code.
 
 SHD and SSC are distributed under CC BY 4.0; the dataset manifest records their source and citation DOI. The archived DVS preprocessor attributes its parser and frame integrator to SpikingJelly, but records no upstream revision or license version; its historical license provenance is unverified. Separately, the pinned dependency `spikingjelly==0.0.0.0.14` ships the Open-Intelligence Open Source License V1.0, retained verbatim in [English](licenses/SpikingJelly-0.0.0.0.14-LICENSE.txt) and [Chinese](licenses/SpikingJelly-0.0.0.0.14-LICENSE-CN.txt). This dependency pin does not establish the archived parser's upstream revision. P-SpikeSSM and SPSN are fetched at pinned revisions and retain their own licenses.

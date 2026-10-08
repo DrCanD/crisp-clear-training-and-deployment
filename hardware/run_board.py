@@ -14,7 +14,7 @@ from board_interface import Crisp, Package, R, CMD_RUN, CMD_NOP, MODE_NAMES, MOD
 
 ROOT = Path(__file__).resolve().parents[1]
 HARDWARE = ROOT / 'hardware'
-from verify_integer import repository_path
+from paths import repository_path, check_hashes
 def utc(): return datetime.now(timezone.utc).isoformat()
 try: sys.stdout.reconfigure(line_buffering=True)
 except Exception: pass
@@ -225,7 +225,10 @@ def main():
     a.block = a.block or (5 if a.quick else 30); a.repeats = a.repeats or (1 if a.quick else 28)
     if a.block <= 0 or a.repeats < 1 or a.warmup < 0 or not 1 <= a.subset <= SLOT_MAX:
         ap.error('Use positive block/repeat counts, non-negative warm-up and 1..512 input slots')
+    if a.verify is not None and a.verify != -1 and a.verify < 1:
+        ap.error('--verify requires a positive input count, or no count for all inputs')
     pkg_dir = repository_path(a.package)
+    check_hashes(pkg_dir)
     pkg = Package(pkg_dir)
     out = repository_path(a.out or f'outputs/hardware/board_{V}'); out.mkdir(parents=True, exist_ok=False)
     build_dir = repository_path(a.build_root) / V
@@ -237,6 +240,7 @@ def main():
         if a.verify is not None:
             n = pkg.n if a.verify < 0 else min(a.verify, pkg.n); rec = verify_all(m, pkg, variant, n, out)
             print('BOARD VERIFICATION', 'PASS' if rec['summary']['bit_exact'] == n else 'FAIL', out, flush=True)
+            require(rec['summary']['bit_exact'] == n, f'Board verification failed: {rec["summary"]["bit_exact"]}/{n} inputs are bit-exact')
         else:
             require(pkg.n == 2264 or a.quick, 'Full measurement requires all 2264 test inputs; --quick is diagnostic only'); power_run(m, pkg, variant, a, out, receipt, clk)
             print('COMPLETED:', out, flush=True)

@@ -20,9 +20,9 @@ from scipy.stats import binom
 HERE = Path(__file__).resolve().parent
 PROJECT = HERE.parent
 sys.path.insert(0, str(HERE))
-from verify_integer import repository_path
+from paths import repository_path
 RUN_ID = datetime.now().strftime('%Y%m%d_%H%M%S')
-RUN_VERSION = 5  # Reconstructed after the 2026-10-03 runtime replacement.
+RUN_VERSION = 5  # Quantization workflow and output schema version.
 if hasattr(torch, 'set_float32_matmul_precision'): torch.set_float32_matmul_precision('highest')
 if hasattr(torch.backends, 'cuda'): torch.backends.cuda.matmul.allow_tf32 = False
 if hasattr(torch.backends, 'cudnn'): torch.backends.cudnn.allow_tf32 = False

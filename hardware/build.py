@@ -19,7 +19,7 @@ import time
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 sys.path.insert(0, str(HERE))
-from verify_integer import repository_path, check_hashes
+from paths import repository_path, check_hashes
 
 
 def sha(path):

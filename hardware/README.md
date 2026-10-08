@@ -154,18 +154,24 @@ sudo bash hardware/install_firmware.sh mf
 sudo python3 hardware/run_board.py --variant mf --verify --package outputs/hardware/full_test --out outputs/hardware/board_mean_field_verification
 ```
 
+The board runner requires Python and NumPy; PyTorch is not needed on the board.
 The installer verifies timing and firmware hashes before loading the overlay.
+The runner checks the input package's SHA-256 manifest before loading any tables.
 Before any AXI access, the runner checks the loaded firmware name, supplied
 bitstream, register map, overlay and measured PL clock against that build's
 receipt. Original build identities and per-input board records are retained
 separately under `data/reference/hardware/`. New builds have their own receipts.
+A verification mismatch returns a nonzero process status and preserves the
+per-input record, failure description and result archive.
 
 Power acquisition uses 30-second blocks, 5-second warm-up, 10 Hz sensor sampling,
 28 input batches and randomized mode order. Inputs are assigned to batches once;
 each loaded batch is replayed repeatedly during its timed block.
 
 ```bash
+sudo bash hardware/install_firmware.sh sampled
 sudo python3 hardware/run_board.py --variant sampled --power --package outputs/hardware/full_test --repeats 28 --block 30 --out outputs/hardware/power_sampled
+sudo bash hardware/install_firmware.sh mf
 sudo python3 hardware/run_board.py --variant mf --power --package outputs/hardware/full_test --repeats 28 --block 30 --out outputs/hardware/power_mean_field
 ```
 

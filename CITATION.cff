@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "Please cite this software and record the full Git commit used for your results."
+type: software
+title: "CRISP and CLEAR: training and deployment"
+authors:
+  - family-names: Dikmen
+    given-names: İsmail Can
+repository-code: "https://github.com/DrCanD/crisp-clear-training-and-deployment"
+url: "https://github.com/DrCanD/crisp-clear-training-and-deployment"
+abstract: >-
+  Reproduction code and numerical evidence for continuous-time reset-free
+  spiking networks and closed-form local learning. Experiments cover mean-field
+  training, sampled inference, sampler sharpening, statistical decision
+  certification, time-step transfer, formal identities and FPGA decision cost.
+keywords:
+  - spiking neural networks
+  - neuromorphic computing
+  - mean-field training
+  - local learning
+  - stochastic inference
+  - reproducible research
+  - FPGA
+  - formal verification

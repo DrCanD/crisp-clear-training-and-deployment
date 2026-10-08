@@ -5,7 +5,6 @@ Run from any working directory with this script's relative path. All arguments
 that name files or directories are interpreted relative to the repository root.
 """
 import argparse
-import hashlib
 import json
 from pathlib import Path
 import sys
@@ -17,27 +16,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 sys.path.insert(0, str(HERE))
 import integer_reference as reference
-
-
-def repository_path(value):
-    path = Path(value)
-    if path.is_absolute():
-        raise ValueError('Expected a repository-relative path')
-    resolved = (ROOT / path).resolve()
-    if not resolved.is_relative_to(ROOT):
-        raise ValueError('Path escapes the repository')
-    return resolved
-
-
-def check_hashes(directory):
-    expected = json.loads((directory / 'sha256.json').read_text())
-    for name, digest in expected.items():
-        if Path(name).name != name:
-            raise ValueError('Hash manifest contains a non-local filename')
-        actual = hashlib.sha256((directory / name).read_bytes()).hexdigest()
-        if actual != digest:
-            raise ValueError(f'Fixture hash mismatch: {name}')
-    return len(expected)
+from paths import repository_path, check_hashes
 
 
 def load_model(directory):

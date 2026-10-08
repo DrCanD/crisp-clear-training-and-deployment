@@ -1,0 +1,44 @@
+name: Reproduction checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cpu:
+    name: CPU / Python ${{ matrix.python }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.11', '3.12']
+    env:
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install CPU dependencies
+        run: |
+          python -m pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -e ".[test]"
+          python -m pip check
+      - name: Check implementation and evidence
+        run: |
+          python -m reproduce test
+          python -m reproduce check-gradients
+          python -m reproduce analyse-reference
+          python hardware/analyze_power.py
+      - name: Check portable C++ inference
+        run: |
+          python hardware/build.py --variant sampled --stage verify --inputs 1
+          python hardware/build.py --variant mf --stage verify --inputs 1

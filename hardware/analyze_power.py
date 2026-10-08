@@ -15,7 +15,7 @@ from scipy.stats import t as student_t
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from verify_integer import repository_path
+from paths import repository_path
 
 
 def load_measurement(path, expected_inputs=2264):

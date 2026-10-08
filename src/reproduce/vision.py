@@ -265,7 +265,7 @@ def load_model(ckpt, device="cpu"):
 
 def load_dvs(path, expected_fingerprint=None):
     p = resolve_path(path)
-    print(f"  [{time.strftime('%H:%M:%S')}] loading {"DVS128 Gesture"} <- {p} ({p.stat().st_size / 1000000.0:.0f} MB)...", flush=True)
+    print(f"  [{time.strftime('%H:%M:%S')}] loading DVS128 Gesture <- {p} ({p.stat().st_size / 1000000.0:.0f} MB)...", flush=True)
     d = torch.load(p, map_location='cpu', weights_only=False)
     print(f'[DATA] keys={sorted(d.keys())}', flush=True)
     Xtr, Xte = (torch.as_tensor(d['Xtr']), torch.as_tensor(d['Xte']))
