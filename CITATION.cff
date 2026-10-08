@@ -1,6 +1,8 @@
 cff-version: 1.2.0
 message: "Please cite this software and record the full Git commit used for your results."
 type: software
+version: "1.0.0"
+date-released: "2026-10-08"
 license: MIT
 title: "CRISP and CLEAR: training and deployment"
 authors:

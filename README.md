@@ -201,7 +201,7 @@ A fresh training run is a new stochastic experiment; hardware and software diffe
 
 ## Citation and questions
 
-Software citation metadata are provided in [CITATION.cff](CITATION.cff). Record the full commit used for each result with `git rev-parse HEAD`, together with the configuration and output metadata. The repository currently has no archived release or DOI.
+Software citation metadata for version 1.0.0 are provided in [CITATION.cff](CITATION.cff). Use the tagged version from the [releases page](https://github.com/DrCanD/crisp-clear-training-and-deployment/releases) and record the full commit used for each result with `git rev-parse HEAD`, together with the configuration and output metadata.
 
 For a reproducibility question, open a [GitHub issue](https://github.com/DrCanD/crisp-clear-training-and-deployment/issues) with the commit, command, configuration, software/device versions and the relevant error output.
 
