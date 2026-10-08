@@ -203,6 +203,10 @@ For a reproducibility question, open a [GitHub issue](https://github.com/DrCanD/
 
 ## License and third-party sources
 
-No project-wide reuse license has been assigned yet. The third-party notices below apply to their respective components and do not license the original project code.
+Original project code and documentation are available under the [MIT License](LICENSE). Third-party code and datasets retain their respective terms; the MIT grant does not replace those terms. Component-specific sources, changes and exceptions are recorded in [third-party notices](licenses/THIRD_PARTY_NOTICES.md).
 
-SHD and SSC are distributed under CC BY 4.0; the dataset manifest records their source and citation DOI. The archived DVS preprocessor attributes its parser and frame integrator to SpikingJelly, but records no upstream revision or license version; its historical license provenance is unverified. Separately, the pinned dependency `spikingjelly==0.0.0.0.14` ships the Open-Intelligence Open Source License V1.0, retained verbatim in [English](licenses/SpikingJelly-0.0.0.0.14-LICENSE.txt) and [Chinese](licenses/SpikingJelly-0.0.0.0.14-LICENSE-CN.txt). This dependency pin does not establish the archived parser's upstream revision. P-SpikeSSM and SPSN are fetched at pinned revisions and retain their own licenses.
+SHD, SSC and DVS128 Gesture are distributed under CC BY 4.0. The dataset manifest records their sources; the [original DVS dataset notice](licenses/dvs128-gesture-dataset.txt) is included.
+
+The DVS parser and frame integration are adapted from SpikingJelly. Their [source manifest](data/manifests/dvs_preprocessing_source.json) pins a verified comparison release, records source and license hashes, and explains each local change. Source-comparison tests check this relationship against `spikingjelly==0.0.0.0.14`. Its Open-Intelligence Open Source License V1.0 is retained in [English](licenses/SpikingJelly-0.0.0.0.14-LICENSE.txt) and [Chinese](licenses/SpikingJelly-0.0.0.0.14-LICENSE-CN.txt). This verified comparison does not recover the original notebook's unrecorded upstream revision or relicense its upstream portions under MIT.
+
+Optional external checkouts are fetched at pinned revisions and are outside the project MIT grant. P-SpikeSSM includes an MIT license. The pinned SPSN checkout contains no explicit reuse license; its source and checkpoints are fetched separately and are not redistributed here.

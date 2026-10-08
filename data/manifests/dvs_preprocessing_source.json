@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "verified_on": "2026-10-08",
+  "component": "DVS128 Gesture event parsing and frame integration",
+  "local_file": "src/reproduce/vision_preparation.py",
+  "upstream": {
+    "project": "SpikingJelly",
+    "release": "0.0.0.0.14",
+    "repository": "https://github.com/fangwei123456/spikingjelly",
+    "release_page": "https://pypi.org/project/spikingjelly/0.0.0.0.14/",
+    "distribution": "spikingjelly-0.0.0.0.14-py3-none-any.whl",
+    "download_url": "https://files.pythonhosted.org/packages/0b/6b/712f9ca9c8fd9a2b2aa01256ccc65daa74ed77237805ac378b7c5aeec808/spikingjelly-0.0.0.0.14-py3-none-any.whl",
+    "distribution_sha256": "9f43c8f3164909e8503d6b5488a16c07b4e5338c6a70529fca408593c4baf151",
+    "source_path": "spikingjelly/datasets/__init__.py",
+    "source_sha256": "66ce1de20419ffa1971f824056d801bf59ef0d7f61fa59e07986262f3ee2e5ed",
+    "license": "Open-Intelligence Open Source License V1.0",
+    "license_files": {
+      "licenses/SpikingJelly-0.0.0.0.14-LICENSE.txt": "016957af6005ada130f4d5a05624e15941e3d78454b26b3bd9a14ac58500ff8c",
+      "licenses/SpikingJelly-0.0.0.0.14-LICENSE-CN.txt": "6de992083cbdc147b9311c96028df55615636d4546a5d2e39e1fdc45628aefcb"
+    },
+    "parser_reference_retained_from_upstream": "https://gitlab.com/inivation/dv/dv-python"
+  },
+  "historical_scope": "The archived notebook names SpikingJelly but does not record a revision. Release 0.0.0.0.14 is the verified compatibility and license reference for the distributed adapter; it is not asserted to be the original notebook revision.",
+  "function_hash_definition": "SHA256 of ast.get_source_segment for each function, encoded as UTF-8 with LF line endings; includes that function docstring.",
+  "function_mapping": [
+    {
+      "local": "load_aedat_v3",
+      "local_sha256": "97f5fc81c8d92350737897d5462f44e66351962a992a9b822703aeee58f415c8",
+      "upstream": "load_aedat_v3",
+      "upstream_sha256": "f317d755c9c1b720a09bbc1b74c5c7dfca930e96e2c1634a2fd34117a1afa454"
+    },
+    {
+      "local": "_seg_to_frame",
+      "local_sha256": "f4c5346e03284345baf62664ff8d24b85e59dca391d8c3755d048b3c9eda3d2b",
+      "upstream": "integrate_events_segment_to_frame",
+      "upstream_sha256": "0ee1d284b86e6a5263ceeb71056c129cca880d24d7d8defeb1ba2bd3b66c3cd9"
+    },
+    {
+      "local": "_seg_index",
+      "local_sha256": "6d16e29ba4a3f2176adaf95d742cef350ebd969e700cd7be339a9bfacf0d0267",
+      "upstream": "cal_fixed_frames_number_segment_index",
+      "upstream_sha256": "465ab91a7e9fedef3402a1d5242635ee6a71d592a314cce7c710a870a55f2f68"
+    },
+    {
+      "local": "integrate_to_frames",
+      "local_sha256": "1009182e83e880d45ae87f3ec6d8eda7e41d515b81af236194e25bb737104b2d",
+      "upstream": "integrate_events_by_fixed_frames_number",
+      "upstream_sha256": "be4daf94d8c14bc3eddcec4a13df9a611cfeb87216728f662e7de869339a8b17"
+    }
+  ],
+  "local_changes": [
+    "Parser: vectorized packet decoding, explicit little-endian integers, int64 output arrays, only eight-byte polarity events retained, truncated packet-header guard.",
+    "Frame accumulation: float32 output instead of the upstream default float64; equivalent integer event counts before clipping for the dataset.",
+    "Segment indices: empty-input guard, minimum unit interval/count, clipping event-count boundaries, and leaving empty time-bin boundaries at zero.",
+    "The final time-bin right boundary is set to the number of events even if that bin is empty; this archived behavior is deliberately preserved and regression-tested.",
+    "Dataset assembly: 128-to-64 coordinate mapping, 64 frames, count clipping to uint8, official train/test lists and labels, and the archived stratified validation split."
+  ],
+  "validation": {
+    "tests": "tests/test_dvs_source.py",
+    "command": "python -m pytest tests/test_dvs_source.py tests/test_core_vision.py",
+    "optional_dependency": "Source-comparison tests require spikingjelly==0.0.0.0.14; they skip explicitly if it is absent. The parser is loaded by AST to avoid importing unrelated optional GPU and plotting dependencies.",
+    "scope": "Packet decoding, frame accumulation and regular nonempty time/count boundaries are compared to the exact hashed upstream source. Archived empty-bin behavior is checked separately and is not claimed to match upstream.",
+    "full_dataset_verification": "See data/manifests/datasets.json; source compatibility tests do not replace full raw-data verification."
+  }
+}

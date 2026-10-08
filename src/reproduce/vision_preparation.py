@@ -1,12 +1,16 @@
-"""DVS128 Gesture frames using the archived event parser and integration.
+"""DVS128 Gesture preprocessing with the archived numerical conventions.
 
-The archived preprocessor attributes the AEDAT parser and frame integration
-to SpikingJelly datasets/__init__.py, https://github.com/fangwei123456/spikingjelly.
-It records neither an upstream revision nor a license version. Separately,
-the pinned SpikingJelly 0.0.0.0.14 dependency's Open-Intelligence Open Source
-License V1.0 texts are retained in licenses/; that version is not asserted
-to be the historical parser source. The original arithmetic is retained;
-explicit little-endian decoding makes the format independent of host order.
+The event parser and frame integration are adapted from SpikingJelly.
+The distributed adapter was compared with the verified PyPI release
+0.0.0.0.14; source hashes, function mapping and local changes are recorded in
+data/manifests/dvs_preprocessing_source.json. Upstream portions retain the
+Open-Intelligence Open Source License V1.0 in licenses/. See
+licenses/THIRD_PARTY_NOTICES.md for scope and attribution.
+
+The historical notebook did not record its upstream revision. The verified
+release is the current compatibility reference, not a claim about that
+unrecorded revision. Archived bin boundaries and empty-interval behavior
+are retained; AEDAT decoding uses explicit little-endian byte order.
 """
 import json
 import os

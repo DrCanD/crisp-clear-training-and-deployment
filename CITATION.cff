@@ -1,6 +1,7 @@
 cff-version: 1.2.0
 message: "Please cite this software and record the full Git commit used for your results."
 type: software
+license: MIT
 title: "CRISP and CLEAR: training and deployment"
 authors:
   - family-names: Dikmen

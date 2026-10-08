@@ -7,6 +7,7 @@ name = "crisp-clear-training-and-deployment"
 version = "0.0.0"
 description = "Reproduce CRISP and CLEAR training, sampled deployment, statistical decisions, and FPGA measurements"
 readme = "README.md"
+license = {file = "LICENSE"}
 keywords = [
   "spiking-neural-networks", "neuromorphic-computing", "continuous-time",
   "mean-field-training", "local-learning", "stochastic-inference",
@@ -33,6 +34,9 @@ Issues = "https://github.com/DrCanD/crisp-clear-training-and-deployment/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools]
+license-files = ["LICENSE", "licenses/*.txt", "licenses/THIRD_PARTY_NOTICES.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "hardware/tests"]
