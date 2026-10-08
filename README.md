@@ -2,7 +2,7 @@
 
 Code and numerical evidence for the manuscript **Bridging mean-field training and sampled inference in spiking networks**.
 
-**DOI:** [https://doi.org/10.5281/zenodo.23239552](https://doi.org/10.5281/zenodo.23239552)
+**DOI:** [https://doi.org/10.5281/zenodo.23249151](https://doi.org/10.5281/zenodo.23249151)
 
 
 CRISP means *continuous-time reset-free independent-sampling perceptron*. CLEAR means *closed-form local eligibility and adjoint rule*. The experiments connect mean-field training to sampled inference, statistical decisions, and measured FPGA decision cost. They also compare training rules, sampling locations, time-step transfer, local learning, and runtime implementations.
@@ -225,11 +225,13 @@ A fresh training run is a new stochastic experiment; hardware and software diffe
 
 ## Citation and questions
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23239552.svg)](https://doi.org/10.5281/zenodo.23239552)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23249151.svg)](https://doi.org/10.5281/zenodo.23249151)
 
-Version 1.0.0 is archived on Zenodo at [doi:10.5281/zenodo.23239553](https://doi.org/10.5281/zenodo.23239553), corresponding to GitHub tag [`v1.0.0`](https://github.com/DrCanD/crisp-clear-training-and-deployment/releases/tag/v1.0.0) and commit `eafc2ca666d869995eeab4f91f976a724604ccca`.
+Version 1.0.1 is archived on Zenodo at [doi:10.5281/zenodo.23249151](https://doi.org/10.5281/zenodo.23249151), corresponding to GitHub tag [`v1.0.1`](https://github.com/DrCanD/crisp-clear-training-and-deployment/releases/tag/v1.0.1) and commit `83f0e177f2a4ac87bc192faebad24ba608099201`. It includes the recovered accelerator and coarse-training records, corrected power standard errors and TPU reproduction settings.
 
-Version 1.0.1 adds the recovered accelerator and coarse-training records, corrects the power standard errors, and aligns the TPU benchmark settings with the archived protocol. These changes postdate v1.0.0 and are not contained in its Zenodo archive. The software concept DOI links the archived versions. [CITATION.cff](CITATION.cff) provides the software citation metadata. Record the version and full commit used for each result with `git rev-parse HEAD`, together with the configuration and output metadata; use the version-specific DOI of the corresponding archive.
+The earlier version 1.0.0 remains available at [doi:10.5281/zenodo.23239553](https://doi.org/10.5281/zenodo.23239553), corresponding to tag [`v1.0.0`](https://github.com/DrCanD/crisp-clear-training-and-deployment/releases/tag/v1.0.0) and commit `eafc2ca666d869995eeab4f91f976a724604ccca`. It does not contain the version 1.0.1 corrections.
+
+The [software concept DOI](https://doi.org/10.5281/zenodo.23239552) links all archived versions. [CITATION.cff](CITATION.cff) provides the software citation metadata. Record the version and full commit used for each result with `git rev-parse HEAD`, together with the configuration and output metadata; use the version-specific DOI of the corresponding archive.
 
 For a reproducibility question, open a [GitHub issue](https://github.com/DrCanD/crisp-clear-training-and-deployment/issues) with the commit, command, configuration, software/device versions and the relevant error output.
 
