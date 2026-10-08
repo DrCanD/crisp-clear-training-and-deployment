@@ -1,6 +1,6 @@
 # CRISP and CLEAR: training and deployment
 
-Code and numerical evidence for the manuscript **Sampler sharpening reduces the deployment gap in stochastic spiking networks**.
+Code and numerical evidence for the manuscript **Sampler sharpening reduces the deployment gap in stochastic spiking networks**.  
 **DOI:** [https://doi.org/10.5281/zenodo.23239552](https://doi.org/10.5281/zenodo.23239552)
 
 
