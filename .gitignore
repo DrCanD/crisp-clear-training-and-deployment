@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+outputs/
+external_code/
+data/raw/
+data/processed/
+proofs/.lake/
+proofs/lake-manifest.json
+hardware/build/
+dist/
+build/

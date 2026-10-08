@@ -1,0 +1,14 @@
+{
+  "variant": "sampled",
+  "package": "344b5f19",
+  "source_sha256": "7b1cf9513b24240135a3f20557ec38b0caecaf1ebce5a0d8d4a3584712cb3dc1",
+  "completed": true,
+  "bitstream_sha256": "544e019e90734696398e7e40b9d17bef70009989856e043bc96ef32689e7e7da",
+  "regmap_sha256": "6ac46d475175ffd0c0f36d6dded7f7b3c43cdb4563bd2869e73ffac504e64e74",
+  "overlay_source_sha256": "6eeaa5ed6e26d0590ca1fed8c83d3e32292b3a471ff39b0da9e9e3b553093416",
+  "timing_status": "PL clock: 99.999001 MHz (requested 100)\nWNS = 0.302707 ns\nTNS = 0.000000 ns\nWHS = 0.010881 ns\nTIMING MET\n",
+  "clock_request_hz": 99998001,
+  "pl_mhz_requested": 100,
+  "original_receipt_sha256": "7f022f8e61d77802fd9d2f34c72298a8f6e05d64f59d2704ea9fcd968828cf4b",
+  "scope": "Numerical identities retained from the original build receipt; machine paths and internal build directories removed."
+}

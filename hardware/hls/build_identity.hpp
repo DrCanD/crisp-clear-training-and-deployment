@@ -1,0 +1,3 @@
+#ifndef CRISP_BUILD_ID
+#define CRISP_BUILD_ID 0x20261001u
+#endif

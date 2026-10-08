@@ -1,0 +1,52 @@
+experiment: dvs_gesture
+dataset:
+  name: dvs_gesture
+  path: data/processed/gesture_event_count.pt
+  fingerprint: 56155d24937b
+  frame_split: event_count
+device: cuda
+seeds:
+- 42
+- 123
+- 999
+families:
+- crisp
+- lif
+factors:
+- 2
+- 4
+training:
+  n_epochs: 100
+  patience: 20
+  batch_size: 32
+  eval_batch: 32
+  lr: 0.001
+  weight_decay: 0.0001
+  grad_clip: 1.0
+  tf32: true
+  aug:
+    aug_translate: 0.08
+    aug_scale: 0.1
+    aug_tshift: 8
+    aug_event_drop: 0.1
+certificate:
+  enabled: true
+  draws: 256
+  alpha: 0.001
+  looks:
+  - 16
+  - 32
+  - 64
+  - 128
+  - 256
+  draw_seeds:
+    factor1_seed42: 1483336726
+    factor1_seed123: 1428232058
+    factor1_seed999: 65681540
+    factor2_seed42: 1875706905
+    factor2_seed123: 1074332350
+    factor2_seed999: 1069374485
+    factor4_seed42: 648139681
+    factor4_seed123: 1080990365
+    factor4_seed999: 1076048615
+output: outputs/dvs_gesture_event_count

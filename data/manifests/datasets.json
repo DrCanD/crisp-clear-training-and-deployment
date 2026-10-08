@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "source_documentation": "https://zenkelab.org/resources/spiking-heidelberg-datasets-shd/",
+  "source_checksum_file": "https://zenkelab.org/datasets/md5sums.txt",
+  "source_checksum_checked": "2026-10-07",
+  "citation_doi": "10.1109/TNNLS.2020.3044364",
+  "array_fingerprint_definition": "SHA1 prefix over split shapes, torch dtype, every 7919th input value (at most 2000000) and all int64 labels; identity check from the archived implementation, not a cryptographic full-array checksum.",
+  "datasets": {
+    "shd": {
+      "raw_directory": "data/raw/shd",
+      "cache_path": "data/processed/shd.npz",
+      "timesteps": 100,
+      "channels": 700,
+      "classes": 20,
+      "recorded_maximum_time_seconds": 1.0927734375,
+      "array_fingerprint": "ba708a14b800",
+      "split_sizes": [
+        7340,
+        816,
+        2264
+      ],
+      "validation_split": "stratified 10 percent of official training set; numpy RandomState(0)",
+      "sources": {
+        "train": {
+          "filename": "shd_train.h5.gz",
+          "url": "https://zenkelab.org/datasets/shd_train.h5.gz",
+          "md5": "d47c9825dee33347913e8ce0f2be08b0"
+        },
+        "test": {
+          "filename": "shd_test.h5.gz",
+          "url": "https://zenkelab.org/datasets/shd_test.h5.gz",
+          "md5": "3062a80ec0c5719404d5b02e166543b1"
+        }
+      },
+      "archived_cache_sha256": "71dfbb7f31ce01607db4e60705c34987d716aa70d9dd010e0c1eafd53856b909",
+      "preprocessing_status": "Verified on the official raw HDF5 sources: source MD5 checks passed and the prepared train/validation/test arrays reproduce archived fingerprint ba708a14b800.",
+      "verification_date": "2026-10-07",
+      "license": "CC-BY-4.0"
+    },
+    "ssc": {
+      "raw_directory": "data/raw/ssc",
+      "cache_path": "data/processed/ssc.pt",
+      "timesteps": 100,
+      "channels": 700,
+      "classes": 35,
+      "recorded_maximum_time_seconds": 0.99951171875,
+      "array_fingerprint": "3085271aa026",
+      "split_sizes": [
+        75466,
+        9981,
+        20382
+      ],
+      "validation_split": "official",
+      "sources": {
+        "train": {
+          "filename": "ssc_train.h5.gz",
+          "url": "https://zenkelab.org/datasets/ssc_train.h5.gz",
+          "md5": "cc61f72a5a5b6d564a3cfdbc75dadcc5"
+        },
+        "valid": {
+          "filename": "ssc_valid.h5.gz",
+          "url": "https://zenkelab.org/datasets/ssc_valid.h5.gz",
+          "md5": "555645b13e15fe270fbfe39cb763f805"
+        },
+        "test": {
+          "filename": "ssc_test.h5.gz",
+          "url": "https://zenkelab.org/datasets/ssc_test.h5.gz",
+          "md5": "e3cf5aa4524459b8e5141b9b34a9e759"
+        }
+      },
+      "preprocessing_status": "Binning arithmetic extracted from the original SSC preprocessing code; full raw-data verification pending.",
+      "license": "CC-BY-4.0"
+    },
+    "dvs_gesture_time": {
+      "raw_directory": "data/raw/dvs_gesture",
+      "cache_path": "data/processed/gesture_time.pt",
+      "classes": 11,
+      "timesteps": 64,
+      "spatial_size": [
+        64,
+        64
+      ],
+      "polarities": 2,
+      "split_by": "time",
+      "array_fingerprint": "3c87c257bb2d",
+      "split_sizes": [
+        1056,
+        120,
+        288
+      ],
+      "validation_split": "stratified 10 percent of official training set; numpy RandomState(0)",
+      "archived_download_url": "https://www.dropbox.com/s/cct5kyilhtsliup/DvsGesture.tar.gz?dl=1",
+      "preprocessing_source": "Original vectorized AEDAT parser and frame integrator, attributed by the archive to SpikingJelly datasets/__init__.py; upstream revision and historical license version were not recorded",
+      "preprocessing_status": "Source port complete; full raw-data re-execution pending."
+    },
+    "dvs_gesture_event_count": {
+      "raw_directory": "data/raw/dvs_gesture",
+      "cache_path": "data/processed/gesture_event_count.pt",
+      "classes": 11,
+      "timesteps": 64,
+      "spatial_size": [
+        64,
+        64
+      ],
+      "polarities": 2,
+      "split_by": "number",
+      "array_fingerprint": "56155d24937b",
+      "split_sizes": [
+        1056,
+        120,
+        288
+      ],
+      "validation_split": "stratified 10 percent of official training set; numpy RandomState(0)",
+      "archived_download_url": "https://www.dropbox.com/s/cct5kyilhtsliup/DvsGesture.tar.gz?dl=1",
+      "preprocessing_source": "Original vectorized AEDAT parser and frame integrator, attributed by the archive to SpikingJelly datasets/__init__.py; upstream revision and historical license version were not recorded",
+      "preprocessing_status": "Source port complete; full raw-data re-execution pending."
+    }
+  }
+}

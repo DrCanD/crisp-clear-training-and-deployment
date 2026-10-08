@@ -1,0 +1,37 @@
+experiment: moment_diagnostics
+dataset:
+  name: shd
+  path: data/processed/shd.npz
+device: cuda
+seeds:
+- 42
+- 123
+- 999
+checkpoint: outputs/deployment_gap_shd/checkpoints/crisp_meanfield/seed_{seed}/best_model.pt
+model_contract:
+  n_layers: 2
+  n_hidden: 256
+  k_modes: 8
+  norm_type: batchnorm
+  ct_exact: true
+timesteps: 100
+draw_seeds:
+  '42': 506060547
+  '123': 2089620164
+  '999': 37178908
+sampling:
+  K: 128
+  KL: 128
+  draw_chunk: 8
+  batch_size: 128
+  group_Ns:
+  - 1
+  - 2
+  - 4
+  - 8
+  - 16
+  - 32
+  - 64
+  mc_check_M: 256
+test_limit: 0
+output: outputs/moment_diagnostics_shd

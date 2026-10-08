@@ -1,0 +1,137 @@
+{
+  "fmt": {
+    "T": 100,
+    "N_IN": 700,
+    "H": 256,
+    "C": 20,
+    "K": 8,
+    "P": 8,
+    "WB": 8,
+    "CB": 18,
+    "FA": 16,
+    "FS": 12,
+    "FZ": 8,
+    "NB": 12,
+    "SB": 11,
+    "M": 256,
+    "DENOM_SEQ": 5000,
+    "DENOM_FIX": 1000,
+    "LOOKS": [
+      16,
+      32,
+      64,
+      128,
+      256
+    ]
+  },
+  "shc": {
+    "l1": 9,
+    "l2": 9,
+    "ro": 12
+  },
+  "scales": {
+    "sw1": 0.00444625963376263,
+    "EC1": 21,
+    "sw2": 0.0035228839540106106,
+    "EC2": 21,
+    "swro": 0.0036361846398180863,
+    "ECro": 24
+  },
+  "widths": {
+    "WU1": 17,
+    "WS": 24,
+    "WU2": 16,
+    "WU2_MF": 21,
+    "WR": 16,
+    "WR_MF": 23,
+    "WRS": 24,
+    "WL": 32
+  },
+  "maxabs": {
+    "u1": 9041,
+    "S1": 1181715,
+    "u2": 1126,
+    "S2": 539300,
+    "r": 2632,
+    "R": 307920,
+    "L": 20589418,
+    "mf_u2": 250957,
+    "mf_S2": 482107,
+    "mf_r": 574076,
+    "spk1": 142004.2641796875,
+    "spk2": 352223.696640625,
+    "n_spk": 1159168
+  },
+  "n_test": 2264,
+  "n_events_max": 12788,
+  "n_events_total": 14167487,
+  "files": {
+    "test_offsets.bin": {
+      "dtype": "uint32",
+      "shape": [
+        2265
+      ]
+    },
+    "test_labels.bin": {
+      "dtype": "int16",
+      "shape": [
+        2264
+      ]
+    },
+    "expected_mean_field_decisions.bin": {
+      "dtype": "int16",
+      "shape": [
+        2264
+      ]
+    },
+    "expected_mean_field_logits.bin": {
+      "dtype": "int64",
+      "shape": [
+        2264,
+        20
+      ]
+    },
+    "expected_certificate_votes.bin": {
+      "dtype": "int8",
+      "shape": [
+        2264,
+        256
+      ]
+    },
+    "expected_reference_votes.bin": {
+      "dtype": "int8",
+      "shape": [
+        2264,
+        256
+      ]
+    },
+    "expected_sequential_decisions.bin": {
+      "dtype": "int16",
+      "shape": [
+        2264,
+        2
+      ]
+    },
+    "expected_fixed_decisions.bin": {
+      "dtype": "int16",
+      "shape": [
+        2264
+      ]
+    },
+    "expected_reference_decisions.bin": {
+      "dtype": "int16",
+      "shape": [
+        2264
+      ]
+    }
+  },
+  "key": "344b5f19",
+  "data_fp": "a1af6da28169",
+  "beta": 5.0,
+  "run_version": 1,
+  "oracle_version": 1,
+  "smoke": false,
+  "checkpoint": "data/checkpoints/hardware/shd_seed999.pt",
+  "source_checkpoint_sha256": "c9464dfee637d4a6f1a5bb02465ff9215e89acd739be6579c621ffb8d94debaa",
+  "scope": "2264-input expected outputs; full input events are not included"
+}

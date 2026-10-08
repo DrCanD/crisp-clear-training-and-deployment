@@ -1,0 +1,7 @@
+dataset,factor,speedup,evidence_level
+shd,2,2.5,reported_summary
+shd,4,6.4000000000000004,reported_summary
+shd,10,8.5,reported_summary
+ssc,2,2.6000000000000001,reported_summary
+ssc,4,6.7999999999999998,reported_summary
+ssc,10,10.199999999999999,reported_summary

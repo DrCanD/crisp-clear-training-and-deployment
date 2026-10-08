@@ -1,0 +1,37 @@
+experiment: conditional_variance
+dataset:
+  name: shd
+  path: data/processed/shd.npz
+device: cuda
+seeds:
+- 42
+- 123
+- 999
+draws: 256
+n_inputs: 256
+batch_size: 8
+evaluation_batch_size: 128
+lif_slopes:
+- 5.0
+- 10.0
+draw_seed: 909
+tf32_evaluation: true
+accuracy_tolerance_inputs: 0
+jobs:
+- name: crisp_baseline
+  family: crisp
+  checkpoint: outputs/sparsity_shd/checkpoints/crisp_baseline/seed_{seed}/best_model.pt
+  result: outputs/sparsity_shd/results/crisp_baseline_seed_{seed}.json
+- name: crisp_penalty_100
+  family: crisp
+  checkpoint: outputs/sparsity_shd/checkpoints/crisp_penalty_100/seed_{seed}/best_model.pt
+  result: outputs/sparsity_shd/results/crisp_penalty_100_seed_{seed}.json
+- name: lif_baseline
+  family: lif
+  checkpoint: outputs/sparsity_shd/checkpoints/lif_baseline/seed_{seed}/best_model.pt
+  result: outputs/sparsity_shd/results/lif_baseline_seed_{seed}.json
+- name: lif_penalty_100
+  family: lif
+  checkpoint: outputs/sparsity_shd/checkpoints/lif_penalty_100/seed_{seed}/best_model.pt
+  result: outputs/sparsity_shd/results/lif_penalty_100_seed_{seed}.json
+output: outputs/conditional_variance_shd

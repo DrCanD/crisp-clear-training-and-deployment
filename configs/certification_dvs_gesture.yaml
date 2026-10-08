@@ -1,0 +1,57 @@
+experiment: certification
+dataset:
+  name: dvs_gesture
+  path: data/processed/gesture_time.pt
+  fingerprint: 3c87c257bb2d
+  frame_split: time
+device: cuda
+seeds:
+- 42
+- 123
+- 999
+output: outputs/certification_dvs_gesture
+certification:
+  certificate_draws: 256
+  reference_draws: 256
+  group_sizes:
+  - 1
+  - 2
+  - 4
+  - 8
+  - 16
+  alphas:
+  - 0.01
+  - 0.001
+  reference_alpha: 0.001
+  batch_size: 32
+  draw_chunk: 8
+  maximum_forward_rows: 8192
+  tf32: false
+jobs:
+- name: crisp_factor_1
+  family: crisp
+  factor: 1
+  beta_end: 5.0
+  checkpoint: outputs/dvs_gesture_time/checkpoints/crisp_factor1_seed{seed}/best_model.pt
+  draw_seeds:
+    42: 1483336726
+    123: 1428232058
+    999: 65681540
+- name: crisp_factor_2
+  family: crisp
+  factor: 2
+  beta_end: 5.0
+  checkpoint: outputs/dvs_gesture_time/checkpoints/crisp_factor2_seed{seed}/best_model.pt
+  draw_seeds:
+    42: 1875706905
+    123: 1074332350
+    999: 1069374485
+- name: crisp_factor_4
+  family: crisp
+  factor: 4
+  beta_end: 5.0
+  checkpoint: outputs/dvs_gesture_time/checkpoints/crisp_factor4_seed{seed}/best_model.pt
+  draw_seeds:
+    42: 648139681
+    123: 1080990365
+    999: 1076048615

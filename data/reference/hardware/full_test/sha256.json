@@ -1,0 +1,13 @@
+{
+  "expected_certificate_votes.bin": "2680045f4f29410ce0c26fabf8fa41e7f78a8a2233122226af106c1607fbf60a",
+  "expected_fixed_decisions.bin": "9bf7b3220ee8f2e06a60cc9573a8b33530e6ab74b08fcbdbb15ea94e53786aa4",
+  "expected_mean_field_decisions.bin": "aa77a08641f4877b9bf6afee70ef4558d4764deb590a61288efa154acaebeb26",
+  "expected_mean_field_logits.bin": "b1fcc3242bf89931b71f79248bdfe77bfcd3c7791ac471165ae8090e3b21da92",
+  "expected_reference_decisions.bin": "65e0c2658d339774e3b65fc00334fd5e5ed30e98fda6ff261977eb1f91a100bf",
+  "expected_reference_votes.bin": "8fa2666b481e93b7c316c6a940fc7ffbbe054652849f765a0211dc9a717ee8aa",
+  "expected_sequential_decisions.bin": "6c8eed3c92f9398baa1f596ff894741fd866f72a8a0f269a98269effb5187724",
+  "input_identity.json": "a0a79b92ce0bda71b70e59f7a71da3e5974aba6f03ba3823c69d903caa14565f",
+  "parameters.json": "6e3adb183c6c69fca6a1ccc5e82cd5669d7d208dc500b88f6af860b065f83d13",
+  "test_labels.bin": "2b5a25651ecf8b4d4b500c99c3241751cb4216cd9fa6564e5e6c22befce9f61d",
+  "test_offsets.bin": "f0fc15f0e798e728751562c8102cf3599d55283a93f8ba3a82afa62868f1b0a3"
+}

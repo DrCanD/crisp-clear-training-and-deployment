@@ -1,0 +1,27 @@
+{
+  "original_build_source_sha256": "7b1cf9513b24240135a3f20557ec38b0caecaf1ebce5a0d8d4a3584712cb3dc1",
+  "matches_original_sampled_and_mean_field_build_receipts": true,
+  "cleanup_scope": "Filenames, include references and comments; numerical accelerator code and parameter values are unchanged.",
+  "files": {
+    "accelerator.cpp": {
+      "original_sha256": "e592a970c901c32b89d79e28a597a3e86987a5cc0da365982563f2076fa0625c",
+      "distributed_sha256": "16f760729832ffb5d2860553b508b449eea3cba19589998dcb20ef4e7d901d6b"
+    },
+    "accelerator.hpp": {
+      "original_sha256": "c433e0e6ddce9b4a5a7c1ba963f942b3b1e35c82d646e9dbc5747de3105888f6",
+      "distributed_sha256": "65403daa8b965d18759b470ca11675731c67bbb2a0e4b9ee82ffc03dde281e7a"
+    },
+    "types.hpp": {
+      "original_sha256": "ec08067514425db6c04de3e570674a0a7327ca9b9d25c2327f4bbc3fe57774c8",
+      "distributed_sha256": "6ed1e5174682a1fd9627d8ccf9bbf2274e13beadc1ee819df81da8deab6e495b"
+    },
+    "parameters.hpp": {
+      "original_sha256": "d0abb9c7f60155f9a688d677fd517abf78dd5701bb87b7ce41d1abfea5c9c6ae",
+      "distributed_sha256": "c8ef7dfab999f61eb5f29d1898314438194ceddbfd46c119f37dc8792ef8d38e"
+    },
+    "build_identity.hpp": {
+      "original_sha256": "b2098c4d1095ee99cd60d4cb5df30b14144fe56eaf04eb91dfbe4d3923cbee8f",
+      "distributed_sha256": "b2098c4d1095ee99cd60d4cb5df30b14144fe56eaf04eb91dfbe4d3923cbee8f"
+    }
+  }
+}

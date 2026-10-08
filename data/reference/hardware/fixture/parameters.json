@@ -1,0 +1,267 @@
+{
+  "fmt": {
+    "T": 100,
+    "N_IN": 700,
+    "H": 256,
+    "C": 20,
+    "K": 8,
+    "P": 8,
+    "WB": 8,
+    "CB": 18,
+    "FA": 16,
+    "FS": 12,
+    "FZ": 8,
+    "NB": 12,
+    "SB": 11,
+    "M": 256,
+    "DENOM_SEQ": 5000,
+    "DENOM_FIX": 1000,
+    "LOOKS": [
+      16,
+      32,
+      64,
+      128,
+      256
+    ]
+  },
+  "shc": {
+    "l1": 9,
+    "l2": 9,
+    "ro": 12
+  },
+  "scales": {
+    "sw1": 0.00444625963376263,
+    "EC1": 21,
+    "sw2": 0.0035228839540106106,
+    "EC2": 21,
+    "swro": 0.0036361846398180863,
+    "ECro": 24
+  },
+  "widths": {
+    "WU1": 17,
+    "WS": 24,
+    "WU2": 16,
+    "WU2_MF": 21,
+    "WR": 16,
+    "WR_MF": 23,
+    "WRS": 24,
+    "WL": 32
+  },
+  "maxabs": {
+    "u1": 9041,
+    "S1": 1181715,
+    "u2": 1126,
+    "S2": 539300,
+    "r": 2632,
+    "R": 307920,
+    "L": 20589418,
+    "mf_u2": 250957,
+    "mf_S2": 482107,
+    "mf_r": 574076,
+    "spk1": 142004.2641796875,
+    "spk2": 352223.696640625,
+    "n_spk": 1159168
+  },
+  "n_test": 128,
+  "n_events_max": 10895,
+  "n_events_total": 810164,
+  "files": {
+    "layer1_weights.bin": {
+      "dtype": "int8",
+      "shape": [
+        256,
+        700
+      ]
+    },
+    "layer1_bias.bin": {
+      "dtype": "int32",
+      "shape": [
+        256
+      ]
+    },
+    "layer1_decay.bin": {
+      "dtype": "uint32",
+      "shape": [
+        256,
+        8
+      ]
+    },
+    "layer1_input_coefficient.bin": {
+      "dtype": "int32",
+      "shape": [
+        256,
+        8
+      ]
+    },
+    "layer1_offset.bin": {
+      "dtype": "int32",
+      "shape": [
+        256
+      ]
+    },
+    "layer2_weights.bin": {
+      "dtype": "int8",
+      "shape": [
+        256,
+        256
+      ]
+    },
+    "layer2_bias.bin": {
+      "dtype": "int32",
+      "shape": [
+        256
+      ]
+    },
+    "layer2_decay.bin": {
+      "dtype": "uint32",
+      "shape": [
+        256,
+        8
+      ]
+    },
+    "layer2_input_coefficient.bin": {
+      "dtype": "int32",
+      "shape": [
+        256,
+        8
+      ]
+    },
+    "layer2_offset.bin": {
+      "dtype": "int32",
+      "shape": [
+        256
+      ]
+    },
+    "readout_weights.bin": {
+      "dtype": "int8",
+      "shape": [
+        20,
+        256
+      ]
+    },
+    "readout_bias.bin": {
+      "dtype": "int32",
+      "shape": [
+        20
+      ]
+    },
+    "readout_decay.bin": {
+      "dtype": "uint32",
+      "shape": [
+        20
+      ]
+    },
+    "readout_input_coefficient.bin": {
+      "dtype": "int32",
+      "shape": [
+        20
+      ]
+    },
+    "logistic_noise.bin": {
+      "dtype": "int16",
+      "shape": [
+        4096
+      ]
+    },
+    "sigmoid_probability.bin": {
+      "dtype": "uint8",
+      "shape": [
+        2048
+      ]
+    },
+    "sequential_threshold.bin": {
+      "dtype": "uint16",
+      "shape": [
+        257
+      ]
+    },
+    "fixed_threshold.bin": {
+      "dtype": "uint16",
+      "shape": [
+        257
+      ]
+    },
+    "test_events.bin": {
+      "dtype": "uint32",
+      "shape": [
+        810164
+      ]
+    },
+    "test_offsets.bin": {
+      "dtype": "uint32",
+      "shape": [
+        129
+      ]
+    },
+    "test_labels.bin": {
+      "dtype": "int16",
+      "shape": [
+        128
+      ]
+    },
+    "expected_mean_field_decisions.bin": {
+      "dtype": "int16",
+      "shape": [
+        128
+      ]
+    },
+    "expected_mean_field_logits.bin": {
+      "dtype": "int64",
+      "shape": [
+        128,
+        20
+      ]
+    },
+    "expected_certificate_votes.bin": {
+      "dtype": "int8",
+      "shape": [
+        128,
+        256
+      ]
+    },
+    "expected_reference_votes.bin": {
+      "dtype": "int8",
+      "shape": [
+        128,
+        256
+      ]
+    },
+    "expected_sequential_decisions.bin": {
+      "dtype": "int16",
+      "shape": [
+        128,
+        2
+      ]
+    },
+    "expected_fixed_decisions.bin": {
+      "dtype": "int16",
+      "shape": [
+        128
+      ]
+    },
+    "expected_reference_decisions.bin": {
+      "dtype": "int16",
+      "shape": [
+        128
+      ]
+    },
+    "expected_layer1_logits.bin": {
+      "dtype": "int16",
+      "shape": [
+        128,
+        100,
+        256
+      ]
+    }
+  },
+  "key": "344b5f19",
+  "data_fp": "a1af6da28169",
+  "beta": 5.0,
+  "run_version": 1,
+  "oracle_version": 1,
+  "smoke": false,
+  "fixture_of": 2264,
+  "checkpoint": "data/checkpoints/hardware/shd_seed999.pt",
+  "source_checkpoint_sha256": "c9464dfee637d4a6f1a5bb02465ff9215e89acd739be6579c621ffb8d94debaa",
+  "scope": "128-input integer arithmetic fixture"
+}

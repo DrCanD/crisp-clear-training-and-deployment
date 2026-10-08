@@ -1,0 +1,16 @@
+{
+  "dataset": "shd",
+  "split": "test",
+  "shape": [
+    2264,
+    100,
+    700
+  ],
+  "dtype": "uint8",
+  "sha256": {
+    "test_events.bin": "94bf22cb15978fe6997c858d49af602410fd5ca45e27cfe446202f7ab430e20d",
+    "test_offsets.bin": "f0fc15f0e798e728751562c8102cf3599d55283a93f8ba3a82afa62868f1b0a3",
+    "test_labels.bin": "2b5a25651ecf8b4d4b500c99c3241751cb4216cd9fa6564e5e6c22befce9f61d"
+  },
+  "event_encoding": "uint32 little-endian: (count << 17) | (channel << 7) | timestep"
+}

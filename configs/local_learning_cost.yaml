@@ -1,0 +1,26 @@
+experiment: local_learning_cost
+device: cuda
+output: outputs/local_learning_cost
+seed: 0
+model:
+  n_in: 700
+  n_hidden: 256
+  n_layers: 2
+  n_classes: 35
+  k_modes: 8
+  complex_poles: false
+  zoh_b: true
+  norm_type: batchnorm
+  readout_pool: mean
+  ct_exact: true
+  hidden_dropout: 0.2
+  beta_start: 1.0
+  beta_end: 5.0
+  anneal_frac: 0.7
+  reg_coef: 0.02
+  rate_target: 0.10
+cost:
+  timesteps: [100, 250, 500, 1000, 2000]
+  batch_size: 32
+  repeats: 3
+  tf32: true

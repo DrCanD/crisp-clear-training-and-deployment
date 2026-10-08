@@ -1,0 +1,35 @@
+experiment: local_learning
+dataset:
+  name: ssc
+  path: data/processed/ssc.pt
+  fingerprint: 3085271aa026
+device: cuda
+seeds:
+- 42
+- 123
+- 999
+rules:
+- bptt
+- clear_symmetric_lag_1
+- clear_random_feedback
+training:
+  n_epochs: 100
+  fixed_epochs: true
+  patience: 20
+  lr: 0.001
+  weight_decay: 0.0001
+  batch_size: 128
+  grad_clip: 1.0
+  bn_calib_batches: 30
+  cos_every: 10
+  cos_batches: 2
+  tf32: true
+  eval_seed: 2026
+  eval_sample_ns:
+  - 1
+  - 5
+  aug:
+    aug_jitter: 4
+    aug_chdrop: 0.05
+    aug_tmask: 20
+output: outputs/local_learning_ssc

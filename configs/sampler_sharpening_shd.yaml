@@ -1,0 +1,60 @@
+experiment: sampler_sharpening
+dataset:
+  name: shd
+  path: data/processed/shd.npz
+device: cuda
+seeds:
+- 42
+- 123
+- 999
+model:
+  n_hidden: 256
+  n_layers: 2
+  k_modes: 8
+  complex_poles: false
+  zoh_b: true
+  norm_type: batchnorm
+  readout_pool: mean
+  ct_exact: true
+  hidden_dropout: 0.2
+training:
+  lr: 0.001
+  weight_decay: 0.0001
+  grad_clip: 1.0
+  batch_size: 128
+  n_epochs: 100
+  patience: 20
+  schedule: cosine
+  eval_seed: 2026
+  tf32: true
+  aug:
+    aug_jitter: 4
+    aug_chdrop: 0.05
+    aug_tmask: 20
+official_source: external_code/pspikessm
+output: outputs/sampler_sharpening_shd
+jobs:
+- name: pspikessm_sharpened
+  family: pspikessm
+  rule: meanfield
+  beta_start: 1.0
+  beta_end: 5.0
+  anneal_frac: 0.7
+- name: crisp_slope_1
+  family: crisp
+  rule: meanfield
+  beta_start: 1.0
+  beta_end: 1.0
+  anneal_frac: 0.7
+- name: crisp_slope_2
+  family: crisp
+  rule: meanfield
+  beta_start: 1.0
+  beta_end: 2.0
+  anneal_frac: 0.7
+- name: crisp_slope_10
+  family: crisp
+  rule: meanfield
+  beta_start: 1.0
+  beta_end: 10.0
+  anneal_frac: 0.7

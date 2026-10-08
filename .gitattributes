@@ -1,0 +1,6 @@
+# Preserve the byte identities used by scientific provenance checks.
+* -text
+*.bin binary
+*.pt binary
+*.npz binary
+*.npy binary

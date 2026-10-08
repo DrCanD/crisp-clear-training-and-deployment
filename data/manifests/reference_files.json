@@ -1,0 +1,208 @@
+{
+  "schema_version": 1,
+  "purpose": "Archived numerical evidence for reanalysis; these records are not fresh training or raw sensor traces.",
+  "files": [
+    {
+      "path": "data/reference/architecture_training.csv",
+      "sha256": "785a06c56935637c3d35608354372572e222639c3dcc6d7f9a94f000498fdca2",
+      "rows": 24,
+      "evidence_level": "seed_records",
+      "source_sha256": [
+        "9687f9d01c94f853d8cd9f0a7771d9f3cffb3961b3ac3b6c04ad6b1849707165"
+      ],
+      "transformation": "Renamed architecture and training labels; removed internal source filenames. Numeric values unchanged.",
+      "units": {}
+    },
+    {
+      "path": "data/reference/sampling_locations.csv",
+      "sha256": "105dfbcda01d9f2a3ce9ba0e0d8d829a2e96e5d7f3f6cc7fe2eff2b7cff6d216",
+      "rows": 30,
+      "evidence_level": "seed_records",
+      "source_sha256": [
+        "9a9edd111ffc1290c01bfe78b7cd43b1ef6dee688241d3fbcab1f62c4832814e"
+      ],
+      "transformation": "Redundant baseline rows omitted: both-site fixed-one results are in architecture_training.csv; CRISP and native-training comparators are also there. Retained all other sampling-site and sharpening interventions.",
+      "units": {}
+    },
+    {
+      "path": "data/reference/sampler_sharpening.csv",
+      "sha256": "43e3bf34454b9599531b9c9fe7a8a9eef7a57b496ad3bba15cee66fd992c697f",
+      "rows": 12,
+      "evidence_level": "seed_records",
+      "source_sha256": [
+        "4c63c64bcbdcf7a8ef7fd5a1a57659f13c8921d4337744f8ae81f135a3d1a0f2"
+      ],
+      "transformation": "Original variable-endpoint slope experiment; this is separate from the matched fixed-five versus annealed-one-to-five experiment.",
+      "units": {}
+    },
+    {
+      "path": "data/reference/matched_slope_schedule.csv",
+      "sha256": "5427ef2270d70b6cef3c29806a9a1bc9c4e49f82746ca8be25efccd5e77c04d0",
+      "rows": 36,
+      "evidence_level": "seed_records",
+      "source_sha256": [
+        "abe1f785de34716b460b24ec624aa251b4bad1ca0ac11962f94c1bddc8713900"
+      ],
+      "transformation": "Flattened completed matched-control test JSONL. All 12 selected checkpoints and their source protocol hashes are preserved; no numbers taken from the older variable-budget control.",
+      "units": {}
+    },
+    {
+      "path": "data/reference/sampling_variance.csv",
+      "sha256": "1e05cd0670b1e5526620e318292dcdc5ae58bb96f8f5177c726f67c799b5a908",
+      "rows": 114,
+      "evidence_level": "seed_records",
+      "source_sha256": [
+        "e1a7466d556636197b3ba88798ae97188d9fa87497c09d77f7ac6584637cc274"
+      ],
+      "transformation": "Sampler-level observations retained. Architecture-level diagnostics use an unweighted mean over sampler sites within each trained model, then mean and sample SD over seeds.",
+      "units": {}
+    },
+    {
+      "path": "data/reference/time_step_transfer.csv",
+      "sha256": "0f3cce557bda748de510430b99749ee34be7755f335f51ff70ac5b0ef754b8a9",
+      "rows": 66,
+      "evidence_level": "seed_records",
+      "source_sha256": [
+        "5e62dd3404a3635521187012a68a899293d5d9de568de70735bd28a56c9e656b"
+      ],
+      "transformation": "LIF transfer-rule selection is a test-selected oracle comparator, not validation selection. Inference modes differ by architecture and are retained. Calibrated columns use labelled data and are not the data-free endpoint.",
+      "units": {}
+    },
+    {
+      "path": "data/reference/gesture_binning.csv",
+      "sha256": "3fd486d8bc5a71090e424122598cc1ddc8fb2cfb1baf26f2ba6cf20c25a6e11e",
+      "rows": 24,
+      "evidence_level": "seed_records",
+      "source_sha256": [
+        "df572239c815fce4b0b1acf4fab77cf2751ee607688960e9e90d555ebb54bfcc"
+      ],
+      "transformation": "Fine-step results for both binning schemes and event-count-binned transfer controls. Fixed-time coarse-to-fine records are in time_step_transfer.csv, avoiding duplicate observations.",
+      "units": {}
+    },
+    {
+      "path": "data/reference/local_learning.csv",
+      "sha256": "37b5a56afc6f149402c117ff86132cf6502e9677124f0460b6a81140c73a11ed",
+      "rows": 24,
+      "evidence_level": "seed_records",
+      "source_sha256": [
+        "ea6e43feb6cc0a4840fd91292ed47fb0097025a34f5599bb7c8cfcad7e8dca3e"
+      ],
+      "transformation": "Retains final-epoch, validation-best and patience-20 observations as distinct columns. The main fixed-budget learning comparison uses last_graded; validation-best is not substituted.",
+      "units": {}
+    },
+    {
+      "path": "data/reference/sparsity.csv",
+      "sha256": "11e3d13863e4b73e9b6dbba28201ffc96470761781866e5fb0877afe16798ab2",
+      "rows": 24,
+      "evidence_level": "seed_records",
+      "source_sha256": [
+        "88f34a83466ac3e9b79144108de0cb0c35339bcc6704c2f52959b4cf2c16d07d"
+      ],
+      "transformation": "Regularization levels expressed by coefficient and target, not internal labels. Two-sided certificate columns apply only to CRISP; LIF uses deterministic spikes. Operation counts are analytical, not measured energy.",
+      "units": {
+        "input_AC_M": "million accumulations",
+        "input_denseMAC_M": "million multiply-accumulates",
+        "spike_AC_one_pass_M": "million accumulations",
+        "state_MAC_one_pass_M": "million multiply-accumulates",
+        "threshold_ops_one_pass_M": "million comparisons"
+      }
+    },
+    {
+      "path": "data/reference/certification_audit.csv",
+      "sha256": "e06745fb5cefc8487abacda8e5b66352376b22530a713b6c454c5cd60831894f",
+      "rows": 156,
+      "evidence_level": "seed_records",
+      "source_sha256": [
+        "6e814929d8a7e93b5f1985ef5fb072065a3e4410707bdd68caa998ac4ff235ee",
+        "5e4d1229794d16bd936fa77e3618d99ac5383e850d969536390415751ab49677"
+      ],
+      "transformation": "Two-sided certificate only. Primary model comparisons are marked. The source audit totals (reference_comparisons, reference_disagreements, maximum_cell_disagreement_rate, audit_cells) aggregate BOTH alpha levels and are repeated in each alpha row: deduplicate units before summing them. Accuracy and abstention columns are alpha-specific. Cached draws are reused across test cells. Extra sparsity audit groups are retained separately. A comparison bound includes reference uncertainty; it is not an adversarial robustness radius.",
+      "units": {}
+    },
+    {
+      "path": "data/reference/local_learning_memory_reported.csv",
+      "sha256": "e2eee0db7008cdad6a7fc4016a871c4b4da623169fde6cb42cc3065954a5c007",
+      "rows": 5,
+      "evidence_level": "reported_summary",
+      "source_sha256": [
+        "a380b559d4af5906504edd2a660740de311d5a7cd81522159145d4d112d08ccb"
+      ],
+      "transformation": "Archived numerical report transcription. Individual timing traces, memory traces or per-input diagnostic observations are not present in this table; do not treat rows as repeated experimental runs.",
+      "units": {}
+    },
+    {
+      "path": "data/reference/training_speed_reported.csv",
+      "sha256": "35d708827d76f73d709e7f62da5d338cf16c8bfa0d1eea49bf88c16cf98eb6f5",
+      "rows": 6,
+      "evidence_level": "reported_summary",
+      "source_sha256": [
+        "ca93f3efcaa350daa646e0d49a917f4ff476bdade52036e9109b56270182db30"
+      ],
+      "transformation": "Archived numerical report transcription. Individual timing traces, memory traces or per-input diagnostic observations are not present in this table; do not treat rows as repeated experimental runs.",
+      "units": {}
+    },
+    {
+      "path": "data/reference/moment_diagnostics_reported.csv",
+      "sha256": "37529fcd8e653c575bfb3c4279010a0fecd3de80c12c1bf1abf7f3748e7e03e4",
+      "rows": 2,
+      "evidence_level": "reported_summary",
+      "source_sha256": [
+        "ec65bdb4fd4f62db49fe8ab18f92f646678b8a11fdeaba9f8f6c7344f29d9fe2"
+      ],
+      "transformation": "Archived numerical report transcription. Individual timing traces, memory traces or per-input diagnostic observations are not present in this table; do not treat rows as repeated experimental runs.",
+      "units": {}
+    },
+    {
+      "path": "data/reference/runtime_reported.csv",
+      "sha256": "db7f8b1beec9b80deb2dc179a518ec77fb2f0cc9c5e83320af6e9d73013e287a",
+      "rows": 42,
+      "evidence_level": "reported_summary",
+      "source_sha256": [
+        "cf185d98406398fd4b9818985b2a5507d2d81aba9b0cfee33c66ee6630dc48e2"
+      ],
+      "transformation": "Archived numerical report transcription. Individual timing traces, memory traces or per-input diagnostic observations are not present in this table; do not treat rows as repeated experimental runs.",
+      "units": {}
+    }
+  ],
+  "conventions": {
+    "accuracy": "Fraction in [0,1] unless a column ends in _pp or _percent.",
+    "sample_sd": "Across seeds, denominator n-1; not the standard error.",
+    "gap": "sampled accuracy minus mean-field accuracy, in percentage points.",
+    "paired_change": "Intervention minus comparator for the same dataset, architecture and seed.",
+    "missing_values": "Empty cells are unavailable or inapplicable, never zero.",
+    "certificate_accuracy": "Correct and accepted predictions divided by all evaluated inputs; abstentions remain in the denominator.",
+    "certificate_disagreements": "Disagreements between accepted decisions and the resolved reference decision; they are not automatically violations of a probabilistic bound."
+  },
+  "matched_slope_protocol": {
+    "source_sha256": "fd39d1bb2726dca5ae4ccb13619ed407e5edc4a40d78062ece006becd33f5ba7",
+    "epochs": 100,
+    "seeds": [
+      42,
+      123,
+      999
+    ],
+    "dataset": "shd",
+    "split_sizes": {
+      "train": 7340,
+      "validation": 816,
+      "test": 2264
+    },
+    "time_steps": 100,
+    "input_channels": 700,
+    "cache_sha256": "71dfbb7f31ce01607db4e60705c34987d716aa70d9dd010e0c1eafd53856b909",
+    "split_label_sha256": [
+      "e0a178b345605ad6c8840289291405ce45ad98fd1bee1e2b7397f85c6d6e3e57",
+      "89d54c5e3d86258e628daefc0e67217076a4baa551878a7a8c7507abf00ef632",
+      "0de4681b3e23d9f55e894adbfc7b94e58894496c4680071e2b6888b6363700c1"
+    ],
+    "selection": "Highest mean-field validation accuracy evaluated at beta=5; strict improvement and earliest tie. All validation-selected checkpoints sealed before test evaluation. Previously studied SHD test data; no unseen-test claim.",
+    "schedule": "beta(e) = beta_start + (5-beta_start)*min(1,e/(0.7*99)), e=0,...,99.",
+    "optimizer": "AdamW; learning rate 0.001; weight decay 0.0001; cosine schedule over 100 epochs; batch size 128; gradient clip 1.",
+    "augmentation": {
+      "aug_chdrop": 0.05,
+      "aug_jitter": 4,
+      "aug_tmask": 20
+    },
+    "checkpoint_availability": "Hashes identify the archived selected checkpoints; hashes alone do not supply the weights."
+  }
+}

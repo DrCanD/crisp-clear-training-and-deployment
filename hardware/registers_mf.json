@@ -1,0 +1,11 @@
+{
+ "AP_CTRL": "0x0000",
+ "CMD_DATA": "0x0010",
+ "ARG0_DATA": "0x0018",
+ "ARG1_DATA": "0x0020",
+ "MODE_DATA": "0x0028",
+ "WINDOW_BASE": "0x1000",
+ "WINDOW_HIGH": "0x1fff",
+ "RES_BASE": "0x2000",
+ "RES_HIGH": "0x2fff"
+}

@@ -1,0 +1,100 @@
+experiment: sparsity
+dataset:
+  name: shd
+  path: data/processed/shd.npz
+device: cuda
+seeds:
+- 42
+- 123
+- 999
+model:
+  n_hidden: 256
+  n_layers: 2
+  k_modes: 8
+  complex_poles: false
+  zoh_b: true
+  norm_type: batchnorm
+  readout_pool: mean
+  ct_exact: true
+  hidden_dropout: 0.2
+training:
+  lr: 0.001
+  weight_decay: 0.0001
+  grad_clip: 1.0
+  batch_size: 128
+  n_epochs: 100
+  patience: 20
+  schedule: cosine
+  eval_seed: 2026
+  tf32: true
+  aug:
+    aug_jitter: 4
+    aug_chdrop: 0.05
+    aug_tmask: 20
+official_source: external_code/pspikessm
+output: outputs/sparsity_shd
+jobs:
+- name: crisp_baseline
+  family: crisp
+  rule: meanfield
+  beta_start: 1.0
+  beta_end: 5.0
+  anneal_frac: 0.7
+  reg_coef: 0.02
+  rate_target: 0.1
+- name: crisp_penalty_1
+  family: crisp
+  rule: meanfield
+  beta_start: 1.0
+  beta_end: 5.0
+  anneal_frac: 0.7
+  reg_coef: 1.0
+  rate_target: 0.0
+- name: crisp_penalty_10
+  family: crisp
+  rule: meanfield
+  beta_start: 1.0
+  beta_end: 5.0
+  anneal_frac: 0.7
+  reg_coef: 10.0
+  rate_target: 0.0
+- name: crisp_penalty_100
+  family: crisp
+  rule: meanfield
+  beta_start: 1.0
+  beta_end: 5.0
+  anneal_frac: 0.7
+  reg_coef: 100.0
+  rate_target: 0.0
+- name: lif_baseline
+  family: lif
+  rule: meanfield
+  beta_start: 1.0
+  beta_end: 5.0
+  anneal_frac: 0.7
+  reg_coef: 0.02
+  rate_target: 0.1
+- name: lif_penalty_1
+  family: lif
+  rule: meanfield
+  beta_start: 1.0
+  beta_end: 5.0
+  anneal_frac: 0.7
+  reg_coef: 1.0
+  rate_target: 0.0
+- name: lif_penalty_10
+  family: lif
+  rule: meanfield
+  beta_start: 1.0
+  beta_end: 5.0
+  anneal_frac: 0.7
+  reg_coef: 10.0
+  rate_target: 0.0
+- name: lif_penalty_100
+  family: lif
+  rule: meanfield
+  beta_start: 1.0
+  beta_end: 5.0
+  anneal_frac: 0.7
+  reg_coef: 100.0
+  rate_target: 0.0
