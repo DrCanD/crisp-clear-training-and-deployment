@@ -48,7 +48,6 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
-      ELAN_HOME: ${{ runner.temp }}/elan
       LEAN_NUM_THREADS: '2'
       PYTHONUNBUFFERED: '1'
     steps:
@@ -58,11 +57,14 @@ jobs:
           python-version: '3.12'
       - name: Install pinned elan
         working-directory: ${{ runner.temp }}
+        env:
+          ELAN_HOME: ${{ runner.temp }}/elan
         run: |
           curl --fail --location --retry 3 --output elan.tar.gz https://github.com/leanprover/elan/releases/download/v4.2.4/elan-x86_64-unknown-linux-gnu.tar.gz
           echo '42b94d4244e8353142c456ec0e4ca6528fd898a6c604d4059f494e706e431f63  elan.tar.gz' | sha256sum --check
           tar --extract --gzip --file elan.tar.gz
           ./elan-init -y --no-modify-path --default-toolchain none
+          echo "ELAN_HOME=$ELAN_HOME" >> "$GITHUB_ENV"
           echo "$ELAN_HOME/bin" >> "$GITHUB_PATH"
       - name: Fetch pinned dependencies and check proofs
         run: python proofs/verify.py --setup
