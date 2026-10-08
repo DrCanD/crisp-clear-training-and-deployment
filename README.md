@@ -1,6 +1,8 @@
 # CRISP and CLEAR: training and deployment
 
 Code and numerical evidence for the manuscript **Sampler sharpening reduces the deployment gap in stochastic spiking networks**.
+[![DOI](https://zenodo.org/badge/1410025622.svg)](https://doi.org/10.5281/zenodo.23239552)
+
 
 CRISP means *continuous-time reset-free independent-sampling perceptron*. CLEAR means *closed-form local eligibility and adjoint rule*. The experiments connect mean-field training to sampled inference, statistical decisions, and measured FPGA decision cost. They also compare training rules, sampling locations, time-step transfer, local learning, and runtime implementations.
 
