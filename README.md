@@ -75,11 +75,11 @@ python hardware/verify_integer.py
 
 The tests cover local derivatives, decision thresholds, recurrence arithmetic, operation counts, and numerical aggregation. `check-gradients` compares every parameter with autograd over 36 float64 settings. `analyse-reference` recalculates CSV summaries from stored numerical evidence and verifies source-table hashes. It does not run new training or hardware measurements. `verify_integer.py` checks genuine integer fixtures and recorded board decisions; see [hardware/README.md](hardware/README.md) for its exact scope.
 
-The [CPU workflow](.github/workflows/reproduce.yml) runs on Python 3.11 and 3.12. It checks implementation tests, the pinned DVS source adapter, local gradients, stored numerical evidence, sampled power analysis and one real integer input in each portable C++ variant. A separate job checks the Lean proofs. GPU training, vendor synthesis and physical measurements require their respective environments.
+The [CPU workflow](.github/workflows/reproduce.yml) runs on Python 3.11 and 3.12. It checks implementation tests, the pinned DVS source adapter, local gradients, stored numerical evidence, sampled and mean-field power analysis and one real integer input in each portable C++ variant. A separate job checks the Lean proofs. GPU training, vendor synthesis and physical measurements require their respective environments.
 
 ### Tested environment and timing
 
-The 8 October 2026 audit used Linux x86_64 (kernel 6.18.44, glibc 2.39), Python 3.12.14, PyTorch 2.11.0 CPU, and an AMD EPYC 9V74 with nine logical CPUs visible. A clean environment passed dependency checks; the final suite passed all 70 tests and two subtests, including source provenance, cache compatibility and board failure gates. Python 3.11 is also covered by the CPU workflow; Windows and macOS were not exercised in this audit.
+The 8 October 2026 audit used Linux x86_64 (kernel 6.18.44, glibc 2.39), Python 3.12.14, PyTorch 2.11.0 CPU, and an AMD EPYC 9V74 with nine logical CPUs visible. A clean environment passed dependency and implementation checks, including source provenance, cache compatibility and board failure gates. Full-test power checks also verify both raw recordings and their comparison. Python 3.11 is covered by the CPU workflow; Windows and macOS were not exercised in this audit.
 
 | Check | Observed elapsed time |
 |---|---:|
@@ -168,7 +168,7 @@ The benchmark retains scan, chunked, FFT, Toeplitz, matrix, fused, compiled, and
 
 [hardware/README.md](hardware/README.md) describes checkpoint quantization, integer replay, HLS synthesis, board verification, raw power acquisition, and power analysis. The seed-999 hardware checkpoint is included. Its tensor values are unchanged; its manifest records the original artifact hash and the repacked tensor identity. The 128-input integer fixture and all 2,264 recorded board decisions are included.
 
-The sampled full-test raw power recording is included and can be reanalysed. The final 28-batch mean-field raw power recording was not recovered; the older 404-input recording is not substituted for it. A new synthesis or physical board measurement requires the appropriate AMD tools and KV260 hardware.
+The sampled and mean-field full-test raw power recordings are included. Each covers all 2,264 inputs in the same 28 disjoint batches. Run `python hardware/analyze_power.py` to recompute both variants and their energy comparison. Mean-field incremental energy is 563.94 microjoules per evaluated input, with a 95% interval of 560.66–567.22 microjoules; sequential sampled inference uses 4.617 times that energy. These quantities subtract bracketed idle power and the D0 replay/control cost. Source hashes and acquisition details are recorded in [the power measurement manifest](data/manifests/power_measurements.json). A new synthesis or physical board measurement requires the appropriate AMD tools and KV260 hardware.
 
 ## Formal identities
 
@@ -197,7 +197,7 @@ A fresh Ubuntu CI run passed all 30 theorem checks both with dependency setup an
 | `tests/` | Implementation checks |
 | `licenses/` | Required notices for incorporated third-party code |
 
-A fresh training run is a new stochastic experiment; hardware and software differences can change its exact trajectory. Stored results remain unchanged when new experiments run. Full historical training was not repeated during repository preparation. The numerical code was checked against the original implementation. Full SHD, SSC and both DVS preprocessing paths, local derivatives, decision rules, integer exports, sampled power analysis and the Lean identities were verified within their documented scopes.
+A fresh training run is a new stochastic experiment; hardware and software differences can change its exact trajectory. Stored results remain unchanged when new experiments run. Full historical training was not repeated during repository preparation. The numerical code was checked against the original implementation. Full SHD, SSC and both DVS preprocessing paths, local derivatives, decision rules, integer exports, sampled and mean-field power analysis and the Lean identities were verified within their documented scopes.
 
 ## Citation and questions
 

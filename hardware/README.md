@@ -11,7 +11,7 @@ experiment: seed 999, two layers of 256 neurons, eight poles, 100 time bins, and
 |---|---|
 | `build.py`, `hls/`, `tcl/` | Portable C++ simulation, HLS synthesis and Vivado implementation |
 | `install_firmware.sh` | Install a timing-qualified build on the KV260 |
-| `analyze_power.py` | Recompute full-test sampled energy and processing time from raw sensor records |
+| `analyze_power.py` | Recompute full-test sampled and mean-field energy and processing time from raw sensor records |
 | `integer_reference.py` | Fixed-point arithmetic, lookup tables, pseudorandom streams and certificate rules |
 | `float_model.py` | Floating-point network required to load and fold the hardware checkpoint |
 | `quantize.py` | Validation-only precision selection and frozen-format test evaluation |
@@ -26,6 +26,8 @@ experiment: seed 999, two layers of 256 neurons, eight poles, 100 time bins, and
 | `../data/reference/hardware/board_verification_*.json` | Original per-input board verification records |
 | `../data/reference/hardware/build_receipt_*.json` | Original numerical build identities with local machine paths removed |
 | `../data/reference/hardware/power_sampled.json` | Original 28-batch sampled power measurement, including raw sensor samples |
+| `../data/reference/hardware/power_mean_field.json` | Original 28-batch mean-field power measurement, including raw sensor samples |
+| `../data/manifests/power_measurements.json` | Source hashes, acquisition settings and the scope of both measurements |
 
 All command arguments naming files or directories are relative to the repository
 root. Scripts find that root from their own location. Generated files are written
@@ -181,17 +183,28 @@ abstentions. Inverse throughput is mean processing time per evaluated input, not
 single-request latency. The runner's `analysis.json` is a diagnostic repeat
 summary. The full analysis below uses input weighting and batch residuals.
 
-## Recompute the recorded sampled power results
+## Recompute the recorded power results
 
 ```bash
 python hardware/analyze_power.py
 ```
 
-This command checks the raw sensor averages and disjoint coverage of all 2,264
-inputs, then produces `outputs/hardware/power_analysis/summary.json` and
-`batches.csv`. It reproduces the sampled-mode energy means, inverse throughput,
-standard errors, 86.1% sequential-versus-fixed saving, and the 112-observation
-energy/time fits. No plotted values are used as input.
+This command checks both raw recordings and disjoint coverage of all 2,264
+inputs in each variant, then produces `outputs/hardware/power_analysis/summary.json`
+and `batches.csv`. It reproduces sampled and mean-field energy, inverse throughput,
+standard errors, 86.1% sequential-versus-fixed saving, the sequential-to-mean-field
+energy ratio, and the 112-observation sampled energy/time fits. The batch table
+identifies the variant, so the two recordings' PREFIX and D0 rows remain distinct.
+No plotted values are used as input.
+
+| Mean-field result | Recomputed value |
+|---|---:|
+| Evaluated inputs / disjoint batches | 2,264 / 28 |
+| Incremental energy per input | 563.9394 microjoules |
+| Energy standard error | 1.5964 microjoules |
+| Energy 95% interval | 560.6579–567.2209 microjoules |
+| Processing time per input (inverse throughput) | 3.3089 ms |
+| Sequential sampled / mean-field energy | 4.6172 |
 
 Energy standard errors use the residual variance of an ordinary least-squares
 model in events per input and, when it varies, draw count. Covariance is evaluated
@@ -200,14 +213,20 @@ freedom. The across-mode draw-cost fits are unweighted ordinary least squares.
 Sensor calibration uncertainty and training-seed variation are not estimated by
 these intervals.
 
-An additional full-test mean-field record can be analyzed with
-`--mean-field` followed by its repository-relative JSON path.
+Both recordings were acquired on 5 October 2026 in separate consecutive sessions,
+using the same input package and identical input groups. Their source hashes,
+firmware identities and normalization are recorded in
+[the measurement manifest](../data/manifests/power_measurements.json). The mean-field
+record contains 58,800 sensor samples across 84 active and 112 idle windows. Sensor
+and CPU-governor paths are stored as device-relative labels; all measurement values
+are unchanged.
 
-## Reproduction limit
+The board's original `analysis.json` gives equal-weight batch diagnostics. The
+results above weight each batch by its input count and use the residual model
+described above, so the two summaries need not have identical means or intervals.
+Throughput uses item-counter increments during the power-sampling window;
+whole-run item counts divided by elapsed time must not replace that rate.
 
-The original 28-batch full-test **mean-field** power recording was not present in
-the recovered source set. The available older mean-field recording covers 404
-inputs and is not substituted for it. Therefore, the reported full-test
-mean-field energy and the sequential-to-mean-field energy ratio cannot yet be
-recalculated from raw samples here. Sampled power reanalysis, integer inference,
-full-test input reconstruction and the recorded board verifications are covered.
+Use `--sampled` or `--mean-field` with repository-relative paths to analyze new
+full-test recordings. Pass `--mean-field ""` for sampled-only analysis. New
+physical measurements still require the corresponding firmware and KV260 board.

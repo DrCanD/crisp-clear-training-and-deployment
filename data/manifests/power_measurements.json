@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "scope": "Original full-test KV260 power recordings. Every evaluated input, including abstentions, contributes to the energy estimate. The two variants were measured in separate consecutive sessions, with identical input batches and the same input package.",
+  "normalization": "All raw sensor samples, counters, input indices, timings and numerical metadata are unchanged. Absolute sensor and CPU governor paths are replaced with device-relative labels; source_sha256 identifies the original measurement JSON bytes.",
+  "records": [
+    {
+      "variant": "sampled",
+      "path": "data/reference/hardware/power_sampled.json",
+      "sha256": "1776094837d2904066ce3b7929eeb0d49bdac84c183f7d223f6ead2f7611c6ab",
+      "source_measurement_sha256": "767e55190eba6021c8d3455868ae3a2d31994b41f5db0ae84c4c864b72e4b245",
+      "source_archive_sha256": "040b08c357732d4af2cb3f3a8f91a22c875c6f915211fd594590edbeae10145f",
+      "started_utc": "2026-10-05T08:47:15.786859+00:00",
+      "finished_utc": "2026-10-05T12:01:18.787635+00:00",
+      "package": "344b5f19",
+      "build_receipt_path": "data/reference/hardware/build_receipt_sampled.json",
+      "bitstream_sha256": "544e019e90734696398e7e40b9d17bef70009989856e043bc96ef32689e7e7da",
+      "clock_hz": 99999999,
+      "batches": 28,
+      "unique_inputs": 2264,
+      "input_index_range": [
+        0,
+        2263
+      ],
+      "active_windows": 140,
+      "idle_windows": 168,
+      "raw_sensor_samples": 92400,
+      "block_seconds": 30.0,
+      "warmup_seconds": 5
+    },
+    {
+      "variant": "mf",
+      "path": "data/reference/hardware/power_mean_field.json",
+      "sha256": "294ead914251e44b3ced48001b23773a3f7e92621cb339b26c8661c1024f84aa",
+      "source_measurement_sha256": "96fcf4ec1c45a26305c6067350642497a0bceab105023f16d36a3de565fb049f",
+      "source_archive_sha256": "2c144a601ddbd3f3cc15a0685ff6c77a903d23296e19287bcaa2785980a498a7",
+      "started_utc": "2026-10-05T12:14:09.993311+00:00",
+      "finished_utc": "2026-10-05T14:11:54.048442+00:00",
+      "package": "344b5f19",
+      "build_receipt_path": "data/reference/hardware/build_receipt_mf.json",
+      "bitstream_sha256": "dd3a01d6940ddd1b2770af18029e4ee43ece429ccadeeff9b8bf65aaf5697c2b",
+      "clock_hz": 99999999,
+      "batches": 28,
+      "unique_inputs": 2264,
+      "input_index_range": [
+        0,
+        2263
+      ],
+      "active_windows": 84,
+      "idle_windows": 112,
+      "raw_sensor_samples": 58800,
+      "block_seconds": 30.0,
+      "warmup_seconds": 5
+    }
+  ],
+  "checks": {
+    "complete_records_and_batches": true,
+    "disjoint_full_test_coverage_per_variant": true,
+    "identical_input_groups_between_variants": true,
+    "mean_field_original_build_receipt_sha256_matches_existing_receipt": true
+  },
+  "analysis": {
+    "command": "python hardware/analyze_power.py",
+    "summary_path": "outputs/hardware/power_analysis/summary.json",
+    "batch_table_path": "outputs/hardware/power_analysis/batches.csv",
+    "weighting": "Input-count-weighted batch estimates. The original board analysis.json uses equal batch weights and is a diagnostic summary, so its means need not equal the full analysis.",
+    "timing": "Processing time is inverse throughput from item-counter increments during the sensor window. Whole-run item counts and elapsed time include other phases and must not replace this rate.",
+    "uncertainty": "Energy intervals use batch residuals; they do not include sensor calibration uncertainty or variation across training seeds."
+  }
+}
