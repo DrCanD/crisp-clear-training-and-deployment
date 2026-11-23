@@ -58,7 +58,7 @@ def verify_all(m, pkg, variant, n, out):
     ids = list(range(n)); batches = pkg.plan_batches(ids)
     rec = {'started_utc': utc(), 'variant': variant, 'package': pkg.params['key'], 'n': n, 'batches': len(batches), 'completed': False, 'failures': []}
     arr = {k: np.full(n, -2, np.int64) for k in ('n1', 'seq', 'used', 'fix', 'ref', 'mf')}; ok = np.zeros(n, bool); dts = []
-    t0 = time.time(); last = 0; done = 0
+    t0 = time.perf_counter(); last = t0 - 20; done = 0
     print(f'[VERIFY] {n} input, {len(batches)} batch (events bellegi {pkg.params["fmt"]["M"]} draw x 2 akis / input)', flush=True)
     for bi, batch in enumerate(batches):
         nev = m.load_inputs(pkg, batch)
@@ -71,10 +71,10 @@ def verify_all(m, pkg, variant, n, out):
                 rec['failures'].append({'input': int(i), 'errors': err, 'got': {k: v for k, v in got.items() if k != 'logits'}})
                 print(f'[FAIL] input {i}: {err}', flush=True)
                 if len(rec['failures']) > 20: raise RuntimeError('too many mismatches; stopping')
-            done += 1; now = time.time()
+            done += 1; now = time.perf_counter()
             if now - last >= 20 or done == n:
-                last = now; rate = done / (now - t0); y = pkg.labels[:done]
-                line = f'[VERIFY] {done}/{n} | bit-exact {int(ok[:done].sum())} | batch {bi + 1}/{len(batches)} ({nev} events) | {dt * 1e3:.0f} ms/input | remaining ~{fmt_dur((n - done) / max(rate, 1e-9))}'
+                last = now; remaining = (n - done) * (now - t0) / done; y = pkg.labels[:done]
+                line = f'[VERIFY] {done}/{n} | bit-exact {int(ok[:done].sum())} | batch {bi + 1}/{len(batches)} ({nev} events) | {dt * 1e3:.0f} ms/input | remaining ~{fmt_dur(remaining)}'
                 if variant == 1:
                     s = arr['seq'][:done]; line += f" | n=1 {np.mean(arr['n1'][:done] == y):.4f} | sequential {np.mean(s == y):.4f} abstention {np.mean(s < 0):.3f} ort {np.mean(arr['used'][:done]):.1f}"
                 else: line += f" | MF {np.mean(arr['mf'][:done] == y):.4f}"

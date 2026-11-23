@@ -48,6 +48,10 @@ def main(argv=None):
     run = commands.add_parser('run', help='Run a YAML experiment configuration')
     run.add_argument('config')
     run.add_argument('--device', choices=('cpu', 'cuda', 'xla'))
+    calibration = commands.add_parser('calibrate-readout',
+                                      help='Select a site and fit frozen readouts on calibration participants')
+    calibration.add_argument('calibration', help='NPZ with teacher logits, draws x0 and x1, labels y and participant IDs g')
+    calibration.add_argument('--output', required=True, help='New JSON file for the selected sites and fitted coefficients')
     analyse = commands.add_parser('analyse-reference', help='Recalculate summaries from stored numeric evidence')
     analyse.add_argument('--output', default='outputs/reference_analysis')
     gradients = commands.add_parser('check-gradients', help='Check 36 exact local-gradient settings')
@@ -83,6 +87,19 @@ def main(argv=None):
         print(json.dumps({'experiment': config['experiment'],
                           'output': config.get('output'),
                           'completed_units': count}, indent=2))
+    elif args.command == 'calibrate-readout':
+        from pathlib import Path
+        import numpy as np
+        from .site_calibration import select_readouts
+        with np.load(args.calibration, allow_pickle=False) as arrays:
+            fits, scores = select_readouts((arrays['x0'], arrays['x1']), arrays['teacher'],
+                                           arrays['y'], arrays['g'])
+        result = {name: {'site': fit.site, 'matrix': fit.matrix.tolist(),
+                         'intercept': fit.intercept.tolist(), 'calibration_accuracy': scores[name]}
+                  for name, fit in fits.items()}
+        with Path(args.output).open('x', encoding='utf-8') as output:
+            json.dump(result, output, indent=2, allow_nan=False)
+            output.write('\n')
     elif args.command == 'analyse-reference':
         from .analysis import analyse
         result = analyse(resolve_path(args.output))
