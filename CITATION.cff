@@ -1,16 +1,15 @@
 cff-version: 1.2.0
 message: "Please cite this software and record the version and full Git commit used for your results."
 type: software
-version: "1.0.1"
-date-released: "2026-10-09"
-doi: "10.5281/zenodo.23249151"
+version: "2.0.0"
+date-released: "2026-11-23"
 license: MIT
 title: "CRISP and CLEAR: training and deployment"
 authors:
   - family-names: Dikmen
     given-names: İsmail Can
 repository-code: "https://github.com/DrCanD/crisp-clear-training-and-deployment"
-url: "https://github.com/DrCanD/crisp-clear-training-and-deployment"
+url: "https://github.com/DrCanD/crisp-clear-training-and-deployment/releases/tag/v2.0.0"
 abstract: >-
   Reproduction code and numerical evidence for continuous-time reset-free
   spiking networks and closed-form local learning. Experiments cover mean-field

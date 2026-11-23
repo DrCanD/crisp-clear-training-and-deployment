@@ -2,7 +2,7 @@
 
 Code and numerical evidence for the manuscript **Bridging mean-field training and sampled inference in spiking networks**.
 
-**DOI:** [https://doi.org/10.5281/zenodo.23249151](https://doi.org/10.5281/zenodo.23249151)
+**All archived versions:** [10.5281/zenodo.23239552](https://doi.org/10.5281/zenodo.23239552)
 
 
 CRISP means *continuous-time reset-free independent-sampling perceptron*. CLEAR means *closed-form local eligibility and adjoint rule*. The experiments connect mean-field training to sampled inference, statistical decisions, and measured FPGA decision cost. They also compare training rules, sampling locations, time-step transfer, local learning, and runtime implementations.
@@ -225,7 +225,7 @@ A fresh training run is a new stochastic experiment; hardware and software diffe
 
 ## Citation and questions
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23249151.svg)](https://doi.org/10.5281/zenodo.23249151)
+[Version 2.0.0](https://github.com/DrCanD/crisp-clear-training-and-deployment/releases/tag/v2.0.0) adds site-specific training penalties, calibration rules for selecting a sampling site, and participant-held-out readout comparisons.
 
 Version 1.0.1 is archived on Zenodo at [doi:10.5281/zenodo.23249151](https://doi.org/10.5281/zenodo.23249151), corresponding to GitHub tag [`v1.0.1`](https://github.com/DrCanD/crisp-clear-training-and-deployment/releases/tag/v1.0.1) and commit `83f0e177f2a4ac87bc192faebad24ba608099201`. It includes the recovered accelerator and coarse-training records, corrected power standard errors and TPU reproduction settings.
 
